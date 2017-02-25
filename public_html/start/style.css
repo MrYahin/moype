@@ -1,0 +1,38 @@
+@CHARSET "UTF-8";
+
+header{
+	color:#fff;
+	text-align: center;
+}
+	.auth{
+		background:rgba(0,0,0,0.65); display:table; padding: 20px; margin: 0 auto 10px auto; border-radius:5px;
+	}
+	.auth input{float:left}
+	.auth input[type="text"], input[type="email"]{
+		border:0; width:320px; margin-right:10px;font-size:1em;padding:12px 20px 13px 20px ; box-sizing:border-box;
+	}
+	.auth input[type="submit"]{
+		background:#ae2c52; width:320px; border:0; color:#fff; font-size:1,25em; font-weight:700; padding:12px 20px 16px 20px; cursor:pointer;
+	}	
+	
+	.reg{
+		background:rgba(0,0,0,0.65);  display:table; padding: 20px; margin: auto; border-radius:5px;
+	}
+	.reg input{float:none}
+	.reg input[type="text"], input[type="email"]{
+		display:block; border:0; width:320px; font-size:1em; padding:12px 20px 13px 20px; box-sizing:border-box; margin: 10px;
+	}
+	.reg input[type="submit"]{
+		display:block; background:#ae2c52; width:320px; border:0; color:#fff; font-size:1,25em; font-weight:700; padding:12px 20px 16px 20px; cursor:pointer; margin: 10px;
+	}		
+	
+	.plan{
+		background:rgba(0,0,0,0.65);  display:table; padding: 20px; margin: auto; border-radius:5px;
+	}
+	.plan input{float:none}
+	.plan input[type="text"], input[type="email"]{
+		display:block; border:0; width:320px; font-size:1em; padding:12px 20px 13px 20px; box-sizing:border-box; margin: 10px;
+	}
+	.plan input[type="submit"]{
+		display:block; background:#ae2c52; width:320px; border:0; color:#fff; font-size:1,25em; font-weight:700; padding:12px 20px 16px 20px; cursor:pointer; margin: 10px;
+	}			
