@@ -1,0 +1,16 @@
+<div class="panel panel-{{typeMsg}}">
+  <div class="panel-heading">{{title}}
+  <button type="button" class="close pull-right" aria-label="Close" ng-click="closeDialogBox(numberDialog)"><span aria-hidden="true">&times;</span></button></div>
+</div>
+<div class="modal-body">
+    <p ng-bind-html="msg"></p>
+</div>
+<div class="modal-footer">
+	<div class="form-group">
+		<!-- <div class="col-xs-12 text-center"> -->
+			<button type="button" class="btn btn-{{typeMsg}} btn-sm" ng-if="type != 'CONFIRM'" ng-click="closeDialogBox(numberDialog)">Close</button>
+			<button ng-show="button.yes" type="button" class="btn btn-{{typeMsg}} btn-sm" ng-click="buttonConfirm('yes', numberDialog)">YES</button>
+			<button type="button" ng-show="button.no" class="btn btn-{{typeMsg}} btn-sm" ng-click="buttonConfirm('no',numberDialog)">NO</button>
+		<!-- </div> -->
+	</div>
+</div>

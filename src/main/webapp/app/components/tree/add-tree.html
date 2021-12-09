@@ -1,0 +1,45 @@
+<div id="modal-add-tree" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<!-- Modal content-->  
+		<div class="modal-content">
+			<div class="modal-header">
+				<button id="btnClose" type="button" class="close btn-sm" data-dismiss="modal" aria-hidden="true">x</button>
+				<h5 class="modal-title"><i class="fa" ng-class="type == 'Edit' ? 'fa-refresh' : 'fa-plus'" aria-hidden="true"></i> {{type}} Tree</h5> 
+			</div>
+			<div class="modal-body"> 
+				<form>
+					<div class="row">
+                        <!-- <div class="col-xs-12"> -->
+							<div class="form-group">
+                                <label>code:</label>
+							    <input class="form-control" type="text" ng-model="treeDetail.codeCategory" ng-required="true">
+							</div>
+						<!-- </div> -->
+                        <!--<div class="col-xs-12"> -->
+							<div class="form-group">
+							    <label>Description:</label>
+							    <input class="form-control" type="text" ng-model="treeDetail.descriptionCategory" ng-required="true">
+							</div>
+						<!-- </div> -->
+				  	</div>
+					<div class="row">
+                        <!--<div class="col-xs-12">-->
+							<div class="form-group">
+							    <label>Note:</label>
+							    <textarea class="form-control" rows="5" ng-model="treeDetail.noteCategory"></textarea>
+							</div>
+						<!--</div> -->
+				  	</div>
+				  	<div class="text-right">
+				  		<button type="button" class="btn btn-danger btn-md" ng-click="cancelTree(treeDetail)">
+							Cancel
+						</button>
+						<button type="button" class="btn btn-primary btn-md" ng-click="saveTree(treeDetail)">
+							Add
+						</button>
+				  	</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

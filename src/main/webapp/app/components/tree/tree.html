@@ -1,0 +1,26 @@
+		<div class="container">
+		    <h3>Structure</h3>
+		    <hr>
+		    <div class="row">
+		        <div class="col-xs-6 icons"> 
+		            <span class="glyphicon glyphicon-plus text-success" ng-click="modalTree('Add')"></span>
+		            <span class="glyphicon glyphicon-pencil text-info" ng-click="modalTree('Edit')"></span>
+		            <span class="glyphicon glyphicon-trash text-danger" ng-click="removeTree()"></span>
+					<span class="glyphicon glyphicon-log-out text-danger" ng-click="modalTree('addStages')"></span>
+				</div>
+		        <div class="col-xs-6 text-right icons">
+		            <span class="glyphicon glyphicon-chevron-up" ng-click="collapseAll()"></span>
+		            <span class="glyphicon glyphicon-chevron-down" ng-click="expandAll()"></span>
+		        </div>
+		    </div>
+
+		    <!-- <form> -->
+		    <div class="form-group">
+		         <input type="input" class="form-control" id="input-search" placeholder="Type to filter..." value="" ng-keyup="search($event)">
+		    </div> 
+		    <!-- </form> -->
+		     <div id="tree"></div>
+		     <ng-include src="'/app/components/tree/add-tree.html'"></ng-include>
+			<ng-include src="'/app/components/tree/addStage.html'"></ng-include>
+		</div>
+		

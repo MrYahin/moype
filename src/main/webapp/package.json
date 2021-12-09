@@ -1,0 +1,29 @@
+{
+  "name": "treeview",
+  "version": "1.0.0",
+  "description": "TreeView Curricular",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lipes/treeview.git"
+  },
+  "keywords": [
+    "treeview",
+    "java",
+    "angularjs"
+  ],
+  "author": "Julio Cesar da Silva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lipes/treeview/issues"
+  },
+  "homepage": "https://github.com/lipes/treeview#readme",
+  "devDependencies": {
+    "angular": "^1.6.4",
+    "angular-route": "^1.6.4",
+    "bootstrap-treeview": "^1.2.0"
+  }
+}

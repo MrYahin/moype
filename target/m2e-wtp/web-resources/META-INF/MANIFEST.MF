@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: moype_v2
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: Yahin
+Implementation-Vendor-Id: ru.moype
+Build-Jdk: 1.8.0_281
+Implementation-URL: http://projects.spring.io/spring-boot/ru.moype/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+

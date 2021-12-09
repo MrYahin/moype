@@ -1,0 +1,85 @@
+<div id="dialog-add-stage" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create stage</h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <table id="stages" class="table striped">
+                        <tbody>
+                            <tr>
+                                <th>Id</th>
+                                <th>Number</th>
+                                <th>Name</th>
+                                <th>NeedTime</th>
+                                <th>Division</th>
+                                <th></th>
+                            </tr>
+                            <tr role="row" ng-repeat="stage in stageList.stages">
+                                <td>{{stage.id}}</td>
+                                <td>{{stage.number}}</td>
+                                <td>{{stage.name}}</td>
+                                <td>{{stage.needTime}}</td>
+                                <td>{{stage.division}}</td>
+                                <td><span class="btn btn-danger minus pull-right">&ndash;</span></td>
+                            </tr>
+                            <tr role="row" class="information_json_plus">
+                                <td class="edit"></td>
+                                <td class="edit"></td>
+                                <td class="edit"></td>
+                                <td class="edit"></td>
+                                <td class="edit"></td>
+                                <td><span class="btn btn-success plus pull-right">+</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-danger btn-md" ng-click="cancelAddStages()">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary btn-md" ng-click="saveStages()">
+                            Save
+                        </button>
+                    </div>
+                </form>
+
+                <script type="text/javascript">
+
+                    // формируем новые поля
+                    jQuery('.plus').click(function(){
+
+                        jQuery('.information_json_plus').before(
+                            '<tr>' +
+                            '<td><input type="text" class="form-control" name="information_json_id[]" placeholder="Id"></td>' +
+                            '<td><input type="text" class="form-control" name="information_json_number[]" placeholder="Number"></td>' +
+                            '<td><input type="text" class="form-control" name="information_json_name[]" placeholder="Name"></td>' +
+                            '<td><input type="text" class="form-control" name="information_json_needTime[]" placeholder="Need time"></td>' +
+                            '<td><input type="text" class="form-control" name="information_json_division[]" placeholder="Division"></td>' +
+                            '<td><span class="btn btn-danger minus pull-right">&ndash;</span></td>' +
+                            '</tr>'
+                        );
+                    });
+                    // on - так как элемент динамически создан и обычный обработчик с ним не работает
+                    jQuery(document).on('click', '.minus', function(){
+                        jQuery( this ).closest( 'tr' ).remove(); // удаление строки с полями
+                    });
+
+                    //при нажатии на ячейку таблицы с классом edit
+                    $('td.edit').click(function(){
+                    //находим input внутри элемента с классом ajax и вставляем вместо input его значение
+                    $('.ajax').html($('.ajax input').val());
+                    //удаляем все классы ajax
+                    $('.ajax').removeClass('ajax');
+                    //Нажатой ячейке присваиваем класс ajax
+                    $(this).addClass('ajax');
+                    //внутри ячейки создаём input и вставляем текст из ячейки в него
+                    $(this).html('<input id="editbox" size="'+ $(this).text().length+'" type="text" value="' + $(this).text() + '" />');
+                    //устанавливаем фокус на созданном элементе
+                    $('#editbox').focus();
+                    });
+                </script>
+            </div>
+        </div>
+    </div>>
+</div>

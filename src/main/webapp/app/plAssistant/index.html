@@ -1,0 +1,36 @@
+<div class="row">
+	<form action="/start" method="post">
+		<input type="submit" value="Start JADE">
+	</form>
+	<form action="/loadOrder" method="post">
+		<input type="submit" value="Dwnld order.">
+	</form>
+</div>
+<div class="row">
+	<form>
+		<input type="submit" value="Dispatch level">
+		<input type="button" value="Диспетчирование" OnClick="location.href='dispatch.html'">
+	</form>
+</div>
+<div class="row">
+	<form action="/launchOrder" method="POST" name="launchOrderForm">
+		<input id="number" type="text" name="order" placeholder="Enter number of Order">
+		<input type="button" value="Launch order" onclick="sendMessage();">
+	</form>
+	
+	<script type="text/javascript">
+		function sendMessage(){
+			form = $('form[name="launchOrderForm"]');
+		    $.post(
+		        form.attr("action"), 
+		        form.serialize()     
+		    );
+		    return false;
+		}
+    </script>
+</div>	
+<div class="row">
+	<div class="col-sm-2">
+		<order-production-list></order-production-list>
+	</div>	
+</div>
