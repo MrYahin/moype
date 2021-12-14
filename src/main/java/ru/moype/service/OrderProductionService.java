@@ -119,7 +119,7 @@ public class OrderProductionService {
 	    //profile.setParameter(Profile.CONTAINER_NAME, "TestContainer");
 		profile.setParameter(Profile.MAIN_HOST, "192.168.31.27");
 		profile.setParameter(Profile.MAIN_PORT, "1099");
-		profile.setParameter(Profile.CONTAINER_NAME, "MainContainer");
+		profile.setParameter(Profile.CONTAINER_NAME, "OrderContainer");
 	    // now set the default Profile to start a container
 	    //AgentContainer ac = rt.createMainContainer(profile);
 	 
@@ -164,7 +164,7 @@ public class OrderProductionService {
 			//OrderProductionAgent myAgent = new OrderProductionAgent();
 			//myAgent.createAgent(order.getNumber());
 			// Get a hold on JADE runtime
-			ContainerController cc = rt.createAgentContainer(profile); 
+			ContainerController cc = rt.createAgentContainer(profile);
 		    // now set the default Profile to start a container
 		    //AgentContainer ac = rt.createMainContainer(profile);
 			AgentController ac = cc.createNewAgent(order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
