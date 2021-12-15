@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -15,7 +16,6 @@ import org.springframework.web.servlet.LocaleResolver;
 
 @Controller
 @SpringBootApplication
-@EnableAutoConfiguration
 @EnableTransactionManagement
 @PropertySource("classpath:application.properties")
 public class Application {
@@ -26,6 +26,7 @@ public class Application {
 		builder.headless(false);
 
 		ConfigurableApplicationContext context = builder.run(args);
+
 		//SingletonBeanRegistry beanRegistry = context.getBeanFactory();
 		//beanRegistry.registerSingleton("dbStage", new DBStage());
 		
@@ -33,9 +34,6 @@ public class Application {
 		//ctx.register(DBStage.class);
 		//ctx.register(StageAgent.class);
 		//ctx.refresh();		
-
-		
-		
 	}
 	
 //	@RequestMapping("/hello")

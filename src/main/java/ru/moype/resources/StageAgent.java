@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import net.sf.jade4spring.JadeBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -28,11 +29,13 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import ru.moype.config.SpringContext;
+import ru.moype.dbService.DBOrderProduction;
 import ru.moype.dbService.DBStage;
 import ru.moype.model.NomLinks;
 import ru.moype.model.Stage;
+import ru.moype.service.StageService;
 
-@Component
 public class StageAgent extends Agent{
 
 	//private PlanMechanics planMechanics;
@@ -49,21 +52,16 @@ public class StageAgent extends Agent{
 	private String inputs[];
 
 	//@Autowired private ApplicationContext applicationContext;	
-	
-	@Autowired
-	private DBStage dbStage;	
-	
-	public void setDbStage(DBStage dbStage)
-	{
-		this.dbStage = dbStage;
-	}
-	
-	public DBStage getDbStage()
-	{
-		return dbStage;
-	}
-	
-	
+
+//	@Autowired
+//	DBStage dbStage;
+	StageService dbStage = SpringContext.getBean(StageService.class);
+
+	//public DBStage getDbStage()
+	//{
+	//	return dbStage;
+	//}
+
 	public class MessageData {
 		public Long point;
 	    public String state = "";
@@ -75,7 +73,7 @@ public class StageAgent extends Agent{
 	
 	//Initialization
 	public void setup() {
-		
+
 		Object[] args = getArguments();
 		stage 	= (Stage)args[0];
 		//startDate 	= (Date)args[1];
@@ -233,18 +231,18 @@ public class StageAgent extends Agent{
 		public void action() {
 			switch (step) {
 			case 0:
-				// Send the INFORM to all stages
-				//!!! требует оптимизации, нужно отправлять только последующим и предшествующим агентам свой статус
-				if (state.equals("done")) { 
-					ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-					for (int i = 0; i < stageAgents.size(); ++i) {
-						msg.addReceiver((AID)stageAgents.elementAt(i));
-					}
-					msg.setContent("" + idStage + ";" + nom + ";" + number + ";" + planFinish);
-					msg.setConversationId("planing");
-					//msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-					myAgent.send(msg);
-				}
+//				// Send the INFORM to all stages
+//				//!!! требует оптимизации, нужно отправлять только последующим и предшествующим агентам свой статус
+//				if (state.equals("done")) {
+//					ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+//					for (int i = 0; i < stageAgents.size(); ++i) {
+//						msg.addReceiver((AID)stageAgents.elementAt(i));
+//					}
+//					msg.setContent("" + idStage + ";" + nom + ";" + number + ";" + planFinish);
+//					msg.setConversationId("planing");
+//					//msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+//					myAgent.send(msg);
+//				}
 				
 				step = 1;
 				break;
@@ -254,7 +252,7 @@ public class StageAgent extends Agent{
 				ACLMessage msg = myAgent.receive(mt);
 				if (msg != null) {
 					// Message received. Process it
-					if (msg.getConversationId() == "status-update") {
+					if (msg.getConversationId() == "status_update") {
 						 ACLMessage reply = msg.createReply();
 						 reply.setPerformative(ACLMessage.INFORM);
 						 reply.setContent(state);
@@ -270,7 +268,7 @@ public class StageAgent extends Agent{
 					// Reply received
 					if (msgS.getPerformative() == ACLMessage.REQUEST) {
 						if (msgS.getConversationId() == "StartPlanning") {
-							
+
 							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 							msgContent = msgS.getContent();
 							if (number == 1) {
@@ -279,24 +277,25 @@ public class StageAgent extends Agent{
 								} catch (ParseException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
-								}	
-							}
-						}	
-						if (msgS.getConversationId() == "Planning") {							
-							//Устанавливать отметку необходимости расчета
-							msgContent = msgS.getContent();  
-							try {
-								messageData = parseMessage(msgContent);
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							if (messageData.senderNom == stage.getCodeNom()) { //Проверка на номенклатуру
-								if (messageData.senderNumber == (number - 1)) { //этап является следующим по порядку
-									startCalc(idStage, messageData.senderEndTime);
-								}	
+									System.out.println("Не смог начать планирование этап: " + name);
+								}
 							}
 						}
+//						if (msgS.getConversationId() == "Planning") {
+//							//Устанавливать отметку необходимости расчета
+//							msgContent = msgS.getContent();
+//							try {
+//								messageData = parseMessage(msgContent);
+//							} catch (ParseException e) {
+//								// TODO Auto-generated catch block
+//								e.printStackTrace();
+//							}
+//							if (messageData.senderNom == stage.getCodeNom()) { //Проверка на номенклатуру
+//								if (messageData.senderNumber == (number - 1)) { //этап является следующим по порядку
+//									startCalc(idStage, messageData.senderEndTime);
+//								}
+//							}
+//						}
 							//precStages.put(pointState.point, pointState.state);
 					}
 				}
@@ -470,7 +469,7 @@ public class StageAgent extends Agent{
 		return msgData;
 	}
 	
-	private void startCalc(String idStage, Date EndTime) {
+	private void startCalc(String idStage, Date startTime) {
 		
 		boolean startCalc = false;
 	
@@ -488,25 +487,25 @@ public class StageAgent extends Agent{
 				}
 		}
 		if (startCalc) {
-			stage.setPlanStartDate(EndTime);
+			stage.setPlanStartDate(startTime);
 			Calendar c = Calendar.getInstance();
-			c.setTime(EndTime);
+			c.setTime(startTime);
 			c.add(Calendar.DATE, (int)stage.getNeedTime());  // number of days to add
-			stage.setPlanFinishDate(EndTime);
+			stage.setPlanFinishDate(c.getTime());
 			stage.setState("done");
-			dbStage.save(stage);
+			//dbStage.save(stage);
 
 			//Обновляем связи номенклатуры
-			List<NomLinks> inputLinks = dbStage.getOutputs(idStage);
-			Iterator<NomLinks> itStageOutputs = inputs.iterator();
-			while (itStageOutputs.hasNext()) {
-				NomLinks output = itStageOutputs.next();
-				if (output.getState() != "done") {
-					output.setState("done");
-					dbStage.saveLink(output);
-				}
+			//List<NomLinks> inputLinks = dbStage.getOutputs(idStage);
+			//Iterator<NomLinks> itStageOutputs = inputs.iterator();
+			//while (itStageOutputs.hasNext()) {
+			//	NomLinks output = itStageOutputs.next();
+			//	if (output.getState() != "done") {
+			//		output.setState("done");
+			//		dbStage.saveLink(output);
+			//	}
 				
-			}
+			//}
 			
 		}
 	}

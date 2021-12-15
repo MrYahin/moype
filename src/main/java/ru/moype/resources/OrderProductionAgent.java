@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import net.sf.jade4spring.JadeBean;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import jade.content.lang.sl.SLCodec;
@@ -29,22 +33,49 @@ import jade.domain.JADEAgentManagement.JADEManagementOntology;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.proto.AchieveREInitiator;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import ru.moype.config.SpringContext;
+import ru.moype.config.WebConfig;
 import ru.moype.model.OrderProduction;
 import ru.moype.model.Stage;
 import ru.moype.service.OrderProductionService;
 //import resources.Operation;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
+
+import javax.annotation.Resource;
 //import base.PlanMechanics;
 //import mechanics.PlanMechanicsImpl;
-
 public class OrderProductionAgent extends Agent{
 
 	//private PlanMechanics planMechanics;
+	//Содержит актуальный список агентов с их статусами
 	private Map<String, String> stageStatus = new HashMap();
 	private Vector stageAgents = new Vector();
 	private OrderProduction order;
-	
+	boolean updateStatus = true;
+
+	JadeBean jadeBean = SpringContext.getBean(JadeBean.class);
+
+	//@Autowired
+	//private ApplicationContext appContext;
+
+	//WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
+	//JadeBean jadeBean = (JadeBean) context.getBean("testBean");
+
+	//@Autowired
+	//JadeBean jadeBean;
+
+	//@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection");
+	//@Autowired(required = false)
+	//private JadeBean jadeBean;
+
 	//Initialization
 	public void setup() {
 		
@@ -52,7 +83,7 @@ public class OrderProductionAgent extends Agent{
 		
 		Object[] args = getArguments();
 		order  = (OrderProduction)args[0]; 
-		
+
 		List<Stage> stageList = new ArrayList<Stage>();		
 		
 		System.out.println("Create agent: "+ getAID().getLocalName() + " " + order.getNumber());
@@ -76,22 +107,26 @@ public class OrderProductionAgent extends Agent{
 			stateStage = stage.getState();  
 			if ((stateStage == null) || !stateStage.equals("stop")){
 				try {
-			    	Object argsJ[] = new Object[3];
-			    	argsJ[0] = stage; 
-			    	//argsJ[1] = order.getStartDate();
+			    	//Object argsJ[] = new Object[3];
+			    	//argsJ[0] = stage;
+					Object argsJ[] = new Object[1];
+					argsJ[0]= stage;
+
+					//argsJ[1] = order.getStartDate();
 			    	//argsJ[2] = order.getCompleteDate();			
-					AgentController agentStage = ac.createNewAgent("stage:" + stage.getNumber() + "_" + stage.getCodeNom() + "_" + stage.getName(),  "ru.moype.resources.StageAgent", argsJ); 
-					agentStage.start();
+					//AgentController agentStage = ac.createNewAgent("stage:" + stage.getNumber() + "_" + stage.getCodeNom() + "_" + stage.getName(),  "ru.moype.resources.StageAgent", argsJ);
+					//agentStage.start();
+					jadeBean.startAgent("stage:" + stage.getNumber() + "_" + stage.getCodeNom() + "_" + stage.getName(),  "ru.moype.resources.StageAgent", argsJ);
 //					operationsStatus.put(agentOperation.getName(), "start");
 				} catch (Exception e) {
-					System.out.println(""); 
+					System.out.println("не получилось создать агентов.");
 				}
 			}
 		}
 	  	
-		System.out.println("Agent: "+ getAID().getLocalName() + " is active.");
+		System.out.println("Agent production: "+ getAID().getLocalName() + " is active.");
 	  	
-		// Update the list of stage agents every minute
+		// Update the list of active stage agents every minute
 		addBehaviour(new TickerBehaviour(this, 60000) {
 
 				protected void onTick() {
@@ -193,7 +228,11 @@ public class OrderProductionAgent extends Agent{
 		private String curStatus; 	// The seller agent who provides the best offer
 		
 		private int step = 0;
-	
+
+		//Создаем время жизни этого цикла, т.к. могут быть зависания
+		long t= System.currentTimeMillis();
+		long end = t+15000; //15 сек
+
 		public PlaningNegotiator(String number, String state, String wayPoint, Date startDate, Date completeDate, PlaningManager m) {
 			super(null); //?
 			this.number 		= number;
@@ -206,19 +245,23 @@ public class OrderProductionAgent extends Agent{
 	
 		public void action() {
 			curStatus = order.getState();
+
 			switch (step) {
-			case 0: //status update
-				ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-				for (int i = 0; i < stageAgents.size(); ++i) {
-					msg.addReceiver((AID)stageAgents.elementAt(i));
+			case 0: //отправить всем этапам запрос на получение статусов
+				if (updateStatus) {
+					ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+					for (int i = 0; i < stageAgents.size(); ++i) {
+						msg.addReceiver((AID) stageAgents.elementAt(i));
+					}
+					//cfp.setContent(number);
+					msg.setConversationId("status_update");
+					//cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+					myAgent.send(msg);
+					// Prepare the template to get proposals
+					step = 1;
+					updateStatus = false; //отправляем запрос на получение статусов только один раз
+					break;
 				}
-				//cfp.setContent(number);
-				msg.setConversationId("status-update");
-				//cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-				myAgent.send(msg);
-				// Prepare the template to get proposals
-				step = 1;
-				break;
 			case 1: //start planning
 				if (curStatus.equals("planning")) {
 					// Send the INFORM to all stages
@@ -232,12 +275,13 @@ public class OrderProductionAgent extends Agent{
 					//cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
 					myAgent.send(msgP);
 					// Prepare the template to get proposals
-				} 
+				}
 				step = 2;
 				break;					
 			case 2:
 				// Receive all status from stage agents
-				mt = MessageTemplate.MatchConversationId("status-update");
+
+				mt = MessageTemplate.MatchConversationId("status_update");
 				ACLMessage reply = myAgent.receive(mt);
 				if (reply != null) {
 					// Reply received
@@ -249,6 +293,7 @@ public class OrderProductionAgent extends Agent{
 						}
 					}
 					repliesCnt++;
+					//Выход из цикла получения ответов
 					if (repliesCnt >= stageAgents.size()) {
 						// We received all replies
 						step = 3;
@@ -257,7 +302,14 @@ public class OrderProductionAgent extends Agent{
 				else {
 					//block();
 				}
+				//Если выполняется более 15 сек
+				if (System.currentTimeMillis() > end) {
+					step = 3;
+				}
 				break;
+
+			case 3:
+					block();
 			}
 		}
 		

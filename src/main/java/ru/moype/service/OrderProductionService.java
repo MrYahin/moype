@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
+import net.sf.jade4spring.JadeBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +39,10 @@ public class OrderProductionService {
 	private OrderProduction order;
 	
 	@Autowired
-	DBOrderProduction dbOrderProduction0;	
+	DBOrderProduction dbOrderProduction0;
+
+	@Resource(name="testBean")
+	private JadeBean jadeBean;
 	
 	//DBOrderProduction dbOrderProduction = new DBOrderProduction();
 	//Это нужно для @Autowired, т.к. не должен быть статичным метод
@@ -80,8 +85,9 @@ public class OrderProductionService {
 		    	Object argsJ[] = new Object[1];
 		    	argsJ[0]= order; 
  
-				AgentController agentOrderProduction = ac.createNewAgent("orderProduction:" + order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ); 
-				agentOrderProduction.start();
+				//AgentController agentOrderProduction = ac.createNewAgent("orderProduction:" + order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
+				jadeBean.startAgent("orderProduction:" + order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
+				//agentOrderProduction.start();
 
 				//i = i + 1;
 				//����� �����������
@@ -105,8 +111,8 @@ public class OrderProductionService {
 		return dbOrderProduction.getAllState(state);
 	}	
 
-	public static String createStageAgent(String orderId) throws Exception{
-		
+	public String createStageAgent(String orderId) throws Exception{
+
 		OrderProduction order;
 		List<Stage> stageList = new ArrayList<Stage>();	
 		
@@ -159,18 +165,19 @@ public class OrderProductionService {
 		
 		if (order != null) {
 			Object argsJ[] = new Object[1];
-			argsJ[0]= order; 
-    	
-			//OrderProductionAgent myAgent = new OrderProductionAgent();
+			argsJ[0]= order;
+				//OrderProductionAgent myAgent = new OrderProductionAgent();
 			//myAgent.createAgent(order.getNumber());
 			// Get a hold on JADE runtime
-			ContainerController cc = rt.createAgentContainer(profile);
+			//ContainerController cc = rt.createAgentContainer(profile);
 		    // now set the default Profile to start a container
 		    //AgentContainer ac = rt.createMainContainer(profile);
-			AgentController ac = cc.createNewAgent(order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
-			ac.start();
-			
-			dbOrderProduction.updateOrder(orderId);
+			//AgentController ac = cc.createNewAgent(order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
+			//ac.start();
+
+			jadeBean.startAgent("orderProduction:" + order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
+
+			//dbOrderProduction.updateOrder(orderId);
 			
 			return orderId;}
 		else 

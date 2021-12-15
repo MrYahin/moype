@@ -13,9 +13,11 @@ import org.springframework.context.ApplicationContext;
 import ru.moype.dbService.InventoryRepositoryNomLinks;
 import ru.moype.dbService.InventoryRepositoryStage;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "nomlinks")
-public class NomLinks {
+public class NomLinks implements Serializable {
 
 	 @Id
 	 @Column(name = "id")

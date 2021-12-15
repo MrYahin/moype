@@ -30,8 +30,8 @@ public class DBStage {
 	    
 		private static final String READ = "Select c From Stage c where c.codeNom = :codeNom order by c.number";
 		private static final String DELETE = "UPDATE Category c set c.statusCategory = 0 where c.idCategory IN (:ids) ";
-		private static final String READINPUTS = "Select c From nomlinks c where c.stageIdOutput = :stageId";
-		private static final String READOUTPUTS = "Select c From nomlinks c where c.stageIdInput = :stageId";
+		private static final String READINPUTS = "Select c From NomLinks c where c.stageIdOutput = :stageId";
+		private static final String READOUTPUTS = "Select c From NomLinks c where c.stageIdInput = :stageId";
 
 		public DBStage() {
 	    }			
