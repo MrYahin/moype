@@ -41,21 +41,22 @@ public class StageAgent extends Agent{
 	//private PlanMechanics planMechanics;
 	//private Vector resourceAgents = new Vector();
 	private Vector stageAgents = new Vector();
-	private String state = "";
+	private String state;
 	private Stage stage;
 	private Date startDate, deadLine, bestDay, planStart, planFinish;
-	private String idStage, input, name, orderId, typeOfResource, nom;
+	private String idStage, input, name, orderId, typeOfResource, nom, mode;
 	private long needTime, point, number;
 	//private AID bestResource; 	// The resource agent who provides the best offer
 	private boolean precondition;
 	Map<Long, String> precStages = new HashMap(); //Precondition stages
 	private String inputs[];
+	String stageTopic;
 
 	//@Autowired private ApplicationContext applicationContext;	
 
 //	@Autowired
 //	DBStage dbStage;
-	StageService dbStage = SpringContext.getBean(StageService.class);
+	StageService stageService = SpringContext.getBean(StageService.class);
 
 	//public DBStage getDbStage()
 	//{
@@ -79,26 +80,29 @@ public class StageAgent extends Agent{
 		//startDate 	= (Date)args[1];
 		//deadLine 	= (Date)args[2];
 		idStage 	= stage.getIdStage();
-		input   		= (stage.getInput() == null)?"0":stage.getInput(); //String of precondition
+		//input   		= (stage.getInput() == null)?"0":stage.getInput(); //String of precondition
 		name    		= stage.getName();
 		orderId 		= stage.getOrderId();
 		typeOfResource 	= stage.getTypeOfResource();
 		needTime		= stage.getNeedTime();
 		point			= stage.getPoint();
-		number			= Long.parseLong(stage.getNumber());
+		number			= stage.getNumber();
 		state			= stage.getState();
 		planStart		= stage.getPlanStartDate();
 		planFinish      = stage.getPlanFinishDate();
-		
+		mode = stage.getMode();
+
 		nom = stage.getCodeNom();
-		precondition    = false;
-		
+		precondition    = true;
+		stageTopic = "stages_" + nom; //Топик в котором общаются только агенты по номенклатуре
+
 	  	//Register point as service
 		DFAgentDescription dfd = new DFAgentDescription();
 	  	dfd.setName(getAID());
 	  	ServiceDescription sd = new ServiceDescription();
 	  	sd.setType("precondition" + orderId);
-	  	sd.setName(getLocalName() + idStage + "-" + number);
+	  	sd.setName("" + number + "_" + nom);
+
 	  	dfd.addServices(sd);
 	  	try {
 	  		DFService.register(this, dfd);
@@ -107,37 +111,38 @@ public class StageAgent extends Agent{
 	  		fe.printStackTrace();
 	  	}
 		
-		inputs = parseInput(input);
-		precondition = Long.parseLong(inputs[0]) == 0;
+		//inputs = parseInput(input);
+		//precondition = Long.parseLong(inputs[0]) == 0;
 		
-		if (!precondition) {
-			for (int i = 0; i < inputs.length; ++i) {
-				precStages.put(Long.parseLong(inputs[i].trim()), "new");
-			}
-		}
+		//if (!precondition) {
+		//	for (int i = 0; i < inputs.length; ++i) {
+		//		precStages.put(Long.parseLong(inputs[i].trim()), "new");
+		//	}
+		//}
 		
-		// Update the list of stages agents every minute for planing
-		addBehaviour(new TickerBehaviour(this, 60000) {
-			protected void onTick() {
-				if (!precondition) {
+		// Update the list of stages agents every 30 sec for planing
+		//addBehaviour(new TickerBehaviour(this, 30000) {
+		//	protected void onTick() {
+
+		//		if (!precondition) {
 					// Update the list of operation agents
-					DFAgentDescription template = new DFAgentDescription();
-					ServiceDescription sd = new ServiceDescription();
-					sd.setType("precondition" + orderId);
-					template.addServices(sd);
-					try {
-						DFAgentDescription[] result = DFService.search(myAgent,	template);
-						stageAgents.clear();
-						for (int i = 0; i < result.length; ++i) {
-							stageAgents.addElement(result[i].getName());
-						}
-					}
-					catch (FIPAException fe) {
-						fe.printStackTrace();
-					}
-				}	
-			}
-		});
+		//			DFAgentDescription template = new DFAgentDescription();
+		//			ServiceDescription sd = new ServiceDescription();
+		//			sd.setType("precondition" + orderId);
+		//			template.addServices(sd);
+		//			try {
+		//				DFAgentDescription[] result = DFService.search(myAgent,	template);
+		//				stageAgents.clear();
+		//				for (int i = 0; i < result.length; ++i) {
+		//					stageAgents.addElement(result[i].getName());
+		//				}
+		//			}
+		//			catch (FIPAException fe) {
+		//				fe.printStackTrace();
+		//			}
+		//		}
+		//	}
+		//});
 
 		//addBehaviour(new PreconditionManager(this));
 
@@ -193,7 +198,7 @@ public class StageAgent extends Agent{
 		//private DBStage dbStage;
 		private PlaningManager(Agent a) {
 			//this.dbStage = dbStage;
-			super(a, 60000); // tick every minute
+			super(a, 1000); // tick every 1 sec
 		}
 		
 		public void onTick() {
@@ -229,91 +234,52 @@ public class StageAgent extends Agent{
 		private int step = 0;		
 		
 		public void action() {
+			// Receive all message from stage agents and orderP
 			switch (step) {
-			case 0:
-//				// Send the INFORM to all stages
-//				//!!! требует оптимизации, нужно отправлять только последующим и предшествующим агентам свой статус
-//				if (state.equals("done")) {
-//					ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-//					for (int i = 0; i < stageAgents.size(); ++i) {
-//						msg.addReceiver((AID)stageAgents.elementAt(i));
-//					}
-//					msg.setContent("" + idStage + ";" + nom + ";" + number + ";" + planFinish);
-//					msg.setConversationId("planing");
-//					//msg.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-//					myAgent.send(msg);
-//				}
-				
-				step = 1;
-				break;
-			case 1:
-				//Ответ по текущему статусу
-				MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-				ACLMessage msg = myAgent.receive(mt);
-				if (msg != null) {
-					// Message received. Process it
-					if (msg.getConversationId() == "status_update") {
-						 ACLMessage reply = msg.createReply();
-						 reply.setPerformative(ACLMessage.INFORM);
-						 reply.setContent(state);
-						 myAgent.send(reply);
-					}
-				  }	  
-				step = 2;
-				break;
-			case 2:
-				// Receive all inform from operation agents and orderP
-				ACLMessage msgS = myAgent.receive();
-				if (msgS != null) {
-					// Reply received
-					if (msgS.getPerformative() == ACLMessage.REQUEST) {
-						if (msgS.getConversationId() == "StartPlanning") {
-
-							SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-							msgContent = msgS.getContent();
-							if (number == 1) {
-								try {
-									startCalc(idStage,  formatter.parse(msgContent));
-								} catch (ParseException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-									System.out.println("Не смог начать планирование этап: " + name);
-								}
+				case 0:
+					ACLMessage msgS = myAgent.receive();
+					if (msgS != null) {
+						if (msgS.getPerformative() == ACLMessage.REQUEST) {
+							if (msgS.getConversationId() == "status_update") {
+								ACLMessage reply = msgS.createReply();
+								reply.setPerformative(ACLMessage.INFORM);
+								reply.setContent(state);
+								myAgent.send(reply);
+							}
+							if (msgS.getConversationId() == "StartPlanning") { //Начало планирования
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+								msgContent = msgS.getContent();
+								//try {
+								//	messageData = parseMessage(msgContent);
+								//} catch (ParseException e) {
+								//	// TODO Auto-generated catch block
+								//	e.printStackTrace();
+								//}
+								//if (messageData.senderNom.equals(stage.getCodeNom())) { //Проверка на номенклатуру
+								//	if (messageData.senderNumber == (number - 1)) { //этап является следующим по порядку
+										try {
+											startCalc(idStage, formatter.parse(msgContent));
+										} catch (ParseException e) {
+											e.printStackTrace();
+										}
+										if (state.equals("plan")) {
+											//отправить предыдущему
+											ACLMessage reply = msgS.createReply();
+											reply.setPerformative(ACLMessage.INFORM);
+											reply.setContent("planningDone");
+											myAgent.send(reply);
+										}
+								//	}
+								//}
 							}
 						}
-//						if (msgS.getConversationId() == "Planning") {
-//							//Устанавливать отметку необходимости расчета
-//							msgContent = msgS.getContent();
-//							try {
-//								messageData = parseMessage(msgContent);
-//							} catch (ParseException e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
-//							if (messageData.senderNom == stage.getCodeNom()) { //Проверка на номенклатуру
-//								if (messageData.senderNumber == (number - 1)) { //этап является следующим по порядку
-//									startCalc(idStage, messageData.senderEndTime);
-//								}
-//							}
-//						}
-							//precStages.put(pointState.point, pointState.state);
 					}
-				}
-					//repliesCnt++;
-					//if (repliesCnt >= stageAgents.size()) {
-						// We received all replies
-					//	step = 2;
-					//}
-					
-				step = 3;				
-				break;
-			case 3:				
-				block();
-			}	
+					block();
+			}
 		}
 		
 		public boolean done() {
-			return step == 5;
+			return step == 3;
 		}
 	}
 	
@@ -469,31 +435,41 @@ public class StageAgent extends Agent{
 		return msgData;
 	}
 	
-	private void startCalc(String idStage, Date startTime) {
+	private void startCalc(String idStage, Date time) {
 		
-		boolean startCalc = false;
-	
+		boolean startCalc = true;
+
 //		DBStage dbstage = (DBStage) applicationContext.getBean("ru.moype.DBStage");		
 		
 		//dbStage = new DBStage();
-		
-		List<NomLinks> inputs = dbStage.getInputs(idStage);
-		Iterator<NomLinks> itStageInputs = inputs.iterator();
-		startCalc = true;
-		while (itStageInputs.hasNext()){
-			NomLinks input = itStageInputs.next();
-				if (input.getState() != "done") {
-					startCalc = false;
-				}
-		}
+		//Надо перенести в orderProductionAgent
+		//List<NomLinks> inputs = stageService.getInputs(idStage);
+		//Iterator<NomLinks> itStageInputs = inputs.iterator();
+		//startCalc = true;
+		//while (itStageInputs.hasNext()){
+		//	NomLinks input = itStageInputs.next();
+		//	input.getStageIdInput()
+		//		if (! getState().equals("new")) {
+		//			startCalc = false;
+		//		}
+		//}
 		if (startCalc) {
-			stage.setPlanStartDate(startTime);
-			Calendar c = Calendar.getInstance();
-			c.setTime(startTime);
-			c.add(Calendar.DATE, (int)stage.getNeedTime());  // number of days to add
-			stage.setPlanFinishDate(c.getTime());
-			stage.setState("done");
-			//dbStage.save(stage);
+			if (mode.equals("0")) {
+				stage.setPlanStartDate(time);
+				Calendar c = Calendar.getInstance();
+				c.setTime(time);
+				c.add(Calendar.DATE, (int) stage.getNeedTime());  // number of days to add
+				stage.setPlanFinishDate(c.getTime());
+			} else {
+				stage.setPlanFinishDate(time);
+				Calendar c = Calendar.getInstance();
+				c.setTime(time);
+				c.add(Calendar.DATE, (int) stage.getNeedTime()*-1);  // number of days to -
+				stage.setPlanStartDate(c.getTime());
+			}
+			state = "plan";
+			stage.setState(state);
+			stageService.save(stage);
 
 			//Обновляем связи номенклатуры
 			//List<NomLinks> inputLinks = dbStage.getOutputs(idStage);

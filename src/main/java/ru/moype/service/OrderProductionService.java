@@ -135,13 +135,7 @@ public class OrderProductionService {
 		//result = createStage(orderId);
 	    
 		order = dbOrderProduction.getOrder(orderId);
-		OrderProductionService service = new OrderProductionService();
-		stageList = service.getStageList(order.getNumber()); 
-		
-		if (stageList.isEmpty()) {
-			
-		}
-		
+
 //		Iterator<Stage> itStage = stageList.iterator();
 //		if  
 //		while (itStage.hasNext()){
@@ -175,7 +169,7 @@ public class OrderProductionService {
 			//AgentController ac = cc.createNewAgent(order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
 			//ac.start();
 
-			jadeBean.startAgent("orderProduction:" + order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
+			jadeBean.startAgent("orderProduction:" + order.getOrderId(), "ru.moype.resources.OrderProductionAgent", argsJ);
 
 			//dbOrderProduction.updateOrder(orderId);
 			
@@ -195,12 +189,47 @@ public class OrderProductionService {
         if (stageList != null) { return stageList; }
         else { return null; }
 	}
-	
+
+	public List<Stage> getStageById(String stageId){
+
+		List<Stage> stageList = new ArrayList<Stage>();
+
+		//DBOrderProduction dbService = new DBOrderProduction();
+		stageList = dbOrderProduction.readStageById(stageId);
+
+		if (stageList != null) { return stageList; }
+		else { return null; }
+	}
+
+	public List<Stage> getStageToPlanList(String orderId, String mode){
+
+		List<Stage> stageList = new ArrayList<Stage>();
+
+		//DBOrderProduction dbService = new DBOrderProduction();
+		stageList = dbOrderProduction.readStageToPlanList(orderId, mode);
+
+		if (stageList != null) { return stageList; }
+		else { return null; }
+	}
+
+	public List<Stage> getStage(String orderId, long number, String codeNom){
+
+		List<Stage> stageList = new ArrayList<Stage>();
+
+		//DBOrderProduction dbService = new DBOrderProduction();
+		stageList = dbOrderProduction.readStage(orderId, number, codeNom);
+
+		if (stageList != null) { return stageList; }
+		else { return null; }
+	}
+
+
+
 //	public int delete(Long[] ids) {
 //		return dbCategory.delete(ids);
 //	}
 
-//	public Category register(Category category) {
-//		return dbCategory.register(category);
-//	}
+	public OrderProduction register(OrderProduction order) {
+		return dbOrderProduction.register(order);
+	}
 }

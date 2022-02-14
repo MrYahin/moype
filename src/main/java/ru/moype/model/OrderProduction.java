@@ -45,7 +45,13 @@ public class OrderProduction implements Serializable{
 	private String idOrderClient;
 
 	@Column(name = "state")	
-	private String state;	
+	private String state;
+
+    @Column(name = "mode")
+    private String mode;
+
+    @Column(name = "idBase")
+    private String idBase;
 
     public OrderProduction() {
     	
@@ -58,9 +64,11 @@ public class OrderProduction implements Serializable{
         this.orderId = "";
         this.idOrderClient = "";
         this.state = "new";
-    }	
+        this.idBase = "";
+        this.mode = "1";
+    }
 	
-    public OrderProduction(String number, String wayPoint, String division, Date startDate, Date completeDate, String orderId, String idOrderClient,  String state) {
+    public OrderProduction(String number, String wayPoint, String division, Date startDate, Date completeDate, String orderId, String idOrderClient,  String state, String mode, String idBase) {
     	this.number = number;
     	this.orderId = orderId;
         this.wayPoint = wayPoint;
@@ -69,6 +77,8 @@ public class OrderProduction implements Serializable{
         this.completeDate = completeDate;
         this.idOrderClient = idOrderClient;
         this.state = state;
+        this.mode = mode;
+        this.idBase = idBase;
     }
     
 //	public void save() {
@@ -98,7 +108,11 @@ public class OrderProduction implements Serializable{
     
     public String getOrderId() {
         return orderId;
-    }        
+    }
+
+    public long getId() {
+        return id;
+    }
 
     public String getIdOrderClient() {
         return idOrderClient;
@@ -106,8 +120,16 @@ public class OrderProduction implements Serializable{
 
     public String getState() {
         return state;
-    }       
-    
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public String getIdBase() {
+        return idBase;
+    }
+
     public void setOrderId(String orderId) {
         this.orderId = orderId;
     }  

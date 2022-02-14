@@ -1,16 +1,9 @@
 package ru.moype.model;
 
 import java.util.Date;
-
 import java.io.Serializable;
 import javax.persistence.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
-import ru.moype.dbService.InventoryRepositoryStage;
 
 @Entity
 @Table(name = "Stage")
@@ -23,7 +16,10 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 private long id;
 
 	 @Column(name = "number")
-	 private String number;
+	 private long number;
+
+	 @Column(name = "nextNumber")
+	 private long nextNumber;
 
 	 @Column(name = "name")
 	 private String name;	 
@@ -43,14 +39,11 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 @Column(name = "typeOfResource")
 	 private String typeOfResource;
 
-	 @Column(name = "input")
-	 private String input;
-
 	 @Column(name = "orderId")
 	 private String orderId;
 
 	 @Column(name = "state")
-	 private String state;	 //lifecycle: new-> planing -> done -> start -> complete.
+	 private String state;	 //lifecycle: new-> plan -> done -> start -> complete.
 
 	 @Column(name = "planStartDate")
 	 @Temporal(value=TemporalType.DATE)	 
@@ -73,21 +66,27 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 private Date factFinishDate;	
 	 
 	 @Column(name = "division")
-	 private String division;	 
-	 
-	 //Important to Hibernate!
+	 private String division;
+
+	@Column(name = "mode")
+	private String mode;
+
+	@Column(name = "idBase")
+	private String idBase;
+
+	//Important to Hibernate!
 	 public Stage() {
 	 }	
 
-	 public Stage(long id,  String number, String name, String idStage, long point, long needTime, String typeOfResource, String input, String orderId, String state, Date planStartDate, Date planFinishDate, Date factStartDate, Date factFinishDate, String codeNom) {
+	 public Stage(long id,  long number, long nextNumber, String name, String idStage, long point, long needTime, String typeOfResource, String orderId, String state, Date planStartDate, Date planFinishDate, Date factStartDate, Date factFinishDate, String codeNom, String mode, String idBase) {
 	        this.setId(id);
 	        this.setNumber(number);
+	        this.nextNumber = nextNumber;
 	        this.setName(name);
 	        this.setIdStage(idStage);
 	        this.setPoint(point);
 	        this.setNeedTime(needTime);
 	        this.setTypeOfResource(typeOfResource);
-	        this.setInput(input);
 	        this.setOrderId(orderId);
 	        this.setState(state);
 	        this.setPlanStartDate(planStartDate);
@@ -95,9 +94,11 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	        this.setFactStartDate(factStartDate);
 	        this.setFactFinishDate(factFinishDate);
 	        this.setCodeNom(codeNom);
-	        }
+		 	this.mode = mode;
+		 	this.setIdBase(idBase);
+	 }
 	 
-	 public Stage(String number) {
+	 public Stage(long number) {
 	        this.setId(-1);
 	        this.setNumber(number);
 	 }
@@ -106,11 +107,15 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	     return id;
 	 }
 
-	 public String getNumber() {
+	 public long getNumber() {
 	     return number;
-	 }	 
+	 }
 
-	 public String getName() {
+	public long getNextNumber() {
+		return nextNumber;
+	}
+
+	public String getName() {
 	     return name;
 	 }		 
 	 
@@ -124,10 +129,6 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 
 	 public String getTypeOfResource() {
 	     return typeOfResource;
-	 }		 
-
-	 public String getInput() {
-	     return input;
 	 }		 
 
 	 public String getIdStage() {
@@ -164,9 +165,17 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 
 	 public String getDivision() {
 	     return division;
-	 }		 
-	 
-	 public void setId(long id) {
+	 }
+
+	public String getMode() {
+		return mode;
+	}
+
+	public String getIdBase() {
+		return idBase;
+	}
+
+	public void setId(long id) {
 	     this.id = id;
 	 }
 
@@ -185,10 +194,6 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 public void setTypeOfResource(String typeOfResource) {
 	     this.typeOfResource = typeOfResource;
 	 }		 
-	 
-	 public void setInput(String input) {
-	     this.input = input;
-	 }		 
 
 	 public void setOrderId(String orderId) {
 	     this.orderId = orderId;
@@ -202,9 +207,13 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	     this.state = state;
 	 }		 
 	 
-	 public void setNumber(String number) {
+	 public void setNumber(long number) {
 	     this.number = number;
 	 }
+
+	public void setNextNumber(long nextNumber) {
+		this.nextNumber = nextNumber;
+	}
 
 	 public void setPlanStartDate(Date planStartDate) {
 	     this.planStartDate = planStartDate;
@@ -228,9 +237,13 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 
 	 public void setDivision(String division) {
 	     this.division = division;
-	 }	 
-	 
-	 @Override
+	 }
+
+	public void setIdBase(String idBase) {
+		this.idBase = idBase;
+	}
+
+	@Override
 	 public String toString() {
 	     return "OrderClient{" +
 	             "id=" + id +

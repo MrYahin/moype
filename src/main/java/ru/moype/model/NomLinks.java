@@ -7,12 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-
-import ru.moype.dbService.InventoryRepositoryNomLinks;
-import ru.moype.dbService.InventoryRepositoryStage;
-
 import java.io.Serializable;
 
 @Entity
@@ -37,9 +31,12 @@ public class NomLinks implements Serializable {
 	 private String state;
 	
 	 @Column(name = "orderId")
-	 private String orderId;	 
-	 
-	 public NomLinks() {
+	 private String orderId;
+
+	@Column(name = "idBase")
+	private String idBase;
+
+	public NomLinks() {
 	 }		 
 	 
 	 public long getId() {
@@ -61,6 +58,10 @@ public class NomLinks implements Serializable {
 	 public String getState() {
 	     return state;
 	 }
+
+	public String getIdBase() {
+		return idBase;
+	}
 
 	 public String getOrderId() {
 	     return orderId;
@@ -92,6 +93,10 @@ public class NomLinks implements Serializable {
 	 
 	 public void setState(String state) {
 	     this.state = state;
-	 }	
- 
+	 }
+
+	public void setIdBase(String idBase) {
+		this.idBase = idBase;
+	}
+
 }

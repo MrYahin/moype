@@ -1,5 +1,7 @@
 package ru.moype.controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,17 +33,19 @@ public class OrderProductionList {
 		return orderProductionService.getAll();
 	}
 
-	@Autowired
-	StartJADE startJADE;	
-	
 	@RequestMapping(path="/launchOrder", method=RequestMethod.POST)
 	@ResponseBody
 	public String launchOrder(@RequestBody String order) throws Exception{
 		
 		Map<String, String> responseMap = splitToMap(order, "=");
 		String orderN = responseMap.get("order");
-		orderProductionService.createStageAgent(orderN);
-		return "ok"; 
+		try {
+			String result = java.net.URLDecoder.decode(orderN, StandardCharsets.UTF_8.name());
+			orderProductionService.createStageAgent(result);
+		} catch (UnsupportedEncodingException e) {
+			// not going to happen - value came from JDK's own StandardCharsets
+		}
+		return "ok";
 	}
 	
 	public static Map<String, String> splitToMap(String source, String keyValueSeparator) {

@@ -8,14 +8,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.moype.model.Category;
-import ru.moype.model.Stage;
-import ru.moype.model.NomLinks;
+import ru.moype.model.*;
 
 @Repository
 public class DBStage {
@@ -57,30 +56,99 @@ public class DBStage {
 		
 		@Transactional
 		public Stage register(Stage stage) {
-			if(stage.getId() != 0L){
-				em.find(Stage.class, stage.getId());
-				em.merge(stage);
+			Stage fStage = getStageById(stage.getIdStage());
+			if(fStage != null){
+				BeanUtils.copyProperties(stage, em.find(Stage.class, fStage.getId()), "id");
+				em.merge(fStage);
 			}else{
 				em.persist(stage);
 				em.flush();
 			}
 			return stage;
 		}
-		
+
+		@Transactional
+		public NomLinks registerNomLink(NomLinks rowNomLink) {
+			NomLinks fNomLink = getNomLink(rowNomLink);
+			if(fNomLink != null){
+				BeanUtils.copyProperties(rowNomLink, em.find(NomLinks.class, fNomLink.getId()), "id");
+				em.merge(fNomLink);
+			}else{
+				em.persist(rowNomLink);
+				em.flush();
+			}
+			return rowNomLink;
+		}
+
+		@Transactional
+		public RowStageSchemeResgroup registerScheme(RowStageSchemeResgroup rowScheme) {
+			RowStageSchemeResgroup fScheme = getScheme(rowScheme);
+			if(fScheme != null){
+				BeanUtils.copyProperties(rowScheme, em.find(RowStageSchemeResgroup.class, fScheme.getId()), "id");
+				em.merge(fScheme);
+			}else{
+				em.persist(rowScheme);
+				em.flush();
+			}
+			return rowScheme;
+		}
+
 		@Transactional
 		public List<NomLinks> getInputs(String stageId){
 			Query query = em.createQuery(READINPUTS);
 			query.setParameter("stageId", stageId);
 			return query.getResultList();
 		}
-		
+
 		@Transactional
 		public List<NomLinks> getOutputs(String stageId){
 			Query query = em.createQuery(READOUTPUTS);
 			query.setParameter("stageId", stageId);
 			return query.getResultList();
-		}	
-		
+		}
+
+		@Transactional
+		public Stage getStageById(String stageId) {
+			Query query = em.createQuery("Select c From Stage c where c.idStage = :stageId");
+			query.setParameter("stageId", stageId);
+			List<Stage> entityList = query.getResultList();
+			if (entityList.size() != 0) {
+				return entityList.get(0);
+			}
+			else
+				return null;
+		}
+
+		@Transactional
+		public NomLinks getNomLink(NomLinks nomLink) {
+			Query query = em.createQuery("Select c From NomLinks c where c.stageIdOutput = :stageIdOutput and c.stageIdInput = :stageIdInput and c.codeNom = :codeNom and c.orderId = :orderId and c.idBase = :idBase");
+			query.setParameter("stageIdOutput", nomLink.getStageIdOutput());
+			query.setParameter("stageIdInput", nomLink.getStageIdInput());
+			query.setParameter("codeNom", nomLink.getCodeNom());
+			query.setParameter("orderId", nomLink.getOrderId());
+			query.setParameter("idBase", nomLink.getIdBase());
+			List<NomLinks> entityList = query.getResultList();
+			if (entityList.size() != 0) {
+				return entityList.get(0);
+			}
+			else
+				return null;
+		}
+
+		@Transactional
+		public RowStageSchemeResgroup getScheme(RowStageSchemeResgroup scheme) {
+			Query query = em.createQuery("Select c From RowStageSchemeResgroup c where c.idStage = :stageId and c.idResGroup = :idResGroup and c.idBase = :idBase");
+			query.setParameter("stageId", scheme.getIdStage());
+			query.setParameter("idResGroup", scheme.getIdResGroup());
+			query.setParameter("idBase", scheme.getIdBase());
+			List<RowStageSchemeResgroup> entityList = query.getResultList();
+			if (entityList.size() != 0) {
+				return entityList.get(0);
+			}
+			else
+				return null;
+		}
+
 		public Stage save(Stage stage) {
 			return repository.save(stage);
 		}

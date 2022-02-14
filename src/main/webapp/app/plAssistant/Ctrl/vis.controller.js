@@ -28,10 +28,10 @@ function TimeLineCtrl($scope, VisDataSet, $http) {
 
     $scope.options = {
         autoResize: true,
-        height: '800px',
+        //height: '800px',
         verticalScroll: true,
         selectable: true,
-        zoomKey: 'ctrlKey',
+        //zoomKey: 'ctrlKey',
          //height: '80%',
         //width: '100%',
 

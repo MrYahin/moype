@@ -23,7 +23,7 @@ import ru.moype.service.OrderProductionService;
 public class DispatchLevel {
 
 	@Autowired
-	OrderProductionService orderService;
+	DispatchResponseBody responseService;
 	
 	@RequestMapping(path="/app/plAssistant/dispatchData", method=RequestMethod.GET, produces = "text/plain;charset=UTF-8")
 	@ResponseBody
@@ -37,9 +37,9 @@ public class DispatchLevel {
 		//	return stages;
 		//}	
 		//return null;
-		DispatchResponseBody response = new DispatchResponseBody();
+		//DispatchResponseBody response = new DispatchResponseBody();
 		
-		return response.DispatchResponseBodyToJSON();
+		return responseService.DispatchResponseBodyToJSON();
 	}
 
 }

@@ -10,48 +10,25 @@ import java.util.Map;
 import java.util.Vector;
 
 import net.sf.jade4spring.JadeBean;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
-import jade.content.lang.sl.SLCodec;
-import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.ContainerID;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
-import jade.domain.FIPANames;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.JADEAgentManagement.CreateAgent;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.proto.AchieveREInitiator;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import ru.moype.config.SpringContext;
-import ru.moype.config.WebConfig;
+import ru.moype.model.NomLinks;
 import ru.moype.model.OrderProduction;
 import ru.moype.model.Stage;
 import ru.moype.service.OrderProductionService;
 //import resources.Operation;
 import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
+import ru.moype.service.StageService;
 
-import javax.annotation.Resource;
-//import base.PlanMechanics;
-//import mechanics.PlanMechanicsImpl;
 public class OrderProductionAgent extends Agent{
 
 	//private PlanMechanics planMechanics;
@@ -60,21 +37,12 @@ public class OrderProductionAgent extends Agent{
 	private Vector stageAgents = new Vector();
 	private OrderProduction order;
 	boolean updateStatus = true;
+	String mode;
 
 	JadeBean jadeBean = SpringContext.getBean(JadeBean.class);
-
-	//@Autowired
-	//private ApplicationContext appContext;
-
-	//WebApplicationContext context = ContextLoader.getCurrentWebApplicationContext();
-	//JadeBean jadeBean = (JadeBean) context.getBean("testBean");
-
-	//@Autowired
-	//JadeBean jadeBean;
-
-	//@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection");
-	//@Autowired(required = false)
-	//private JadeBean jadeBean;
+	OrderProductionService orderProdService = new OrderProductionService();
+	List<Stage> stageList = new ArrayList<Stage>();
+	StageService stageService = SpringContext.getBean(StageService.class);
 
 	//Initialization
 	public void setup() {
@@ -82,10 +50,9 @@ public class OrderProductionAgent extends Agent{
 		String stateStage = "";
 		
 		Object[] args = getArguments();
-		order  = (OrderProduction)args[0]; 
+		order  = (OrderProduction)args[0];
+		mode = order.getMode();
 
-		List<Stage> stageList = new ArrayList<Stage>();		
-		
 		System.out.println("Create agent: "+ getAID().getLocalName() + " " + order.getNumber());
 		System.out.println("My GUID is "+ getAID().getName());
 		System.out.println("My addresses are:");
@@ -98,8 +65,7 @@ public class OrderProductionAgent extends Agent{
 		AgentContainer ac = getContainerController();
 		
 		Stage stage;
-		OrderProductionService service = new OrderProductionService();
-		stageList = service.getStageList(order.getNumber()); 
+		stageList = orderProdService.getStageList(order.getOrderId());
 		
 		Iterator<Stage> itStage = stageList.iterator();
 		while (itStage.hasNext()){
@@ -116,7 +82,9 @@ public class OrderProductionAgent extends Agent{
 			    	//argsJ[2] = order.getCompleteDate();			
 					//AgentController agentStage = ac.createNewAgent("stage:" + stage.getNumber() + "_" + stage.getCodeNom() + "_" + stage.getName(),  "ru.moype.resources.StageAgent", argsJ);
 					//agentStage.start();
-					jadeBean.startAgent("stage:" + stage.getNumber() + "_" + stage.getCodeNom() + "_" + stage.getName(),  "ru.moype.resources.StageAgent", argsJ);
+//					jadeBean.startAgent("stage:" + stage.getNumber() + "_" + stage.getCodeNom() + "_" + stage.getName(),  "ru.moype.resources.StageAgent", argsJ);
+					jadeBean.startAgent("stage:" + stage.getNumber() + "_" + stage.getId(),  "ru.moype.resources.StageAgent", argsJ);
+
 //					operationsStatus.put(agentOperation.getName(), "start");
 				} catch (Exception e) {
 					System.out.println("не получилось создать агентов.");
@@ -194,7 +162,7 @@ public class OrderProductionAgent extends Agent{
 		private Date startDate, completeDate;
 		
 		private PlaningManager(Agent a, String number, String state, String wayPoint, Date startDate, Date completeDate) {
-			super(a, 60000); // tick every minute
+			super(a, 1000); // tick 1 sek
 			this.number 		= number;
 			this.state 			= state;
 			this.wayPoint 		= wayPoint;
@@ -248,36 +216,130 @@ public class OrderProductionAgent extends Agent{
 
 			switch (step) {
 			case 0: //отправить всем этапам запрос на получение статусов
-				if (updateStatus) {
-					ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-					for (int i = 0; i < stageAgents.size(); ++i) {
-						msg.addReceiver((AID) stageAgents.elementAt(i));
-					}
-					//cfp.setContent(number);
-					msg.setConversationId("status_update");
-					//cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-					myAgent.send(msg);
-					// Prepare the template to get proposals
-					step = 1;
-					updateStatus = false; //отправляем запрос на получение статусов только один раз
+				if (curStatus.equals("plan")) {
+					step = 4;
 					break;
 				}
+				//if (updateStatus) {
+				//	ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+				//	for (int i = 0; i < stageAgents.size(); ++i) {
+				//		msg.addReceiver((AID) stageAgents.elementAt(i));
+				//	}
+				//	//cfp.setContent(number);
+				//	msg.setConversationId("status_update");
+				//	//cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+				//	myAgent.send(msg);
+				//	// Prepare the template to get proposals
+					step = 1;
+				//	updateStatus = false; //отправляем запрос на получение статусов только один раз
+					break;
+				//}
 			case 1: //start planning
-				if (curStatus.equals("planning")) {
-					// Send the INFORM to all stages
-					ACLMessage msgP = new ACLMessage(ACLMessage.REQUEST);
-					for (int i = 0; i < stageAgents.size(); ++i) {
-						msgP.addReceiver((AID)stageAgents.elementAt(i));
+					Stage stage;
+					Stage prevStage;
+					Stage nextStage;
+					stageList = orderProdService.getStageToPlanList(order.getOrderId(), order.getMode());
+					Iterator<Stage> itStage = stageList.iterator();
+					String codeNom = "";
+					while (itStage.hasNext()){
+						stage = itStage.next();
+						boolean startCalc = true;
+						if (!codeNom.equals(stage.getCodeNom())){
+							if (!stage.getState().equals("plan")) {
+								String topic = "" + stage.getNumber() + "_" + stage.getCodeNom();
+								DFAgentDescription templateToRequest = new DFAgentDescription();
+								ServiceDescription sd = new ServiceDescription();
+								sd.setType("precondition" + order.getOrderId());
+								sd.setName(topic);
+								templateToRequest.addServices(sd);
+								try {
+									DFAgentDescription[] result = DFService.search(myAgent, templateToRequest);
+									stageAgents.clear();
+									for (int i = 0; i < result.length; ++i) {
+										stageAgents.addElement(result[i].getName());
+									}
+								} catch (FIPAException fe) {
+									fe.printStackTrace();
+								}
+								codeNom = stage.getCodeNom();
+								ACLMessage msgP = new ACLMessage(ACLMessage.REQUEST);
+								for (int i = 0; i < stageAgents.size(); ++i) {
+									msgP.addReceiver((AID) stageAgents.elementAt(i));
+								}
+								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+								if (mode.equals("0")) { //ASAP
+									if (stage.getNumber() == 1) {
+										//Вхождения
+										List<NomLinks> inputs = stageService.getInputs(stage.getIdStage());
+										Iterator<NomLinks> itStageInputs = inputs.iterator();
+										while (itStageInputs.hasNext()) {
+											NomLinks input = itStageInputs.next();
+											List<Stage> inputStages = orderProdService.getStageById(input.getStageIdInput());
+											Iterator<Stage> itInputStages = inputStages.iterator();
+											while (itInputStages.hasNext()) {
+												Stage inStage = itInputStages.next();
+												if (inStage.getState().equals("new")) {
+													startCalc = false;
+												} else if (startDate.before(inStage.getPlanFinishDate())) {
+													startDate = inStage.getPlanFinishDate();
+												}
+											}
+										}
+										msgP.setContent(formatter.format(startDate));
+									} else {
+										List<Stage> prevStageList = new ArrayList<Stage>();
+										prevStageList = orderProdService.getStage(order.getOrderId(), stage.getNumber() - 1, stage.getCodeNom());
+										Iterator<Stage> itPrevStage = prevStageList.iterator();
+										while (itPrevStage.hasNext()) {
+											prevStage = itPrevStage.next();
+											if (prevStage.getState().equals("plan")) {
+												msgP.setContent(formatter.format(prevStage.getPlanFinishDate()));
+											}
+										}
+									}
+								}
+								else { //JIT
+									if (stage.getNextNumber() == 0) {
+										//Вхождения
+										List<NomLinks> outputs = stageService.getOutputs(stage.getIdStage());
+										Iterator<NomLinks> itStageOutputs = outputs.iterator();
+										while (itStageOutputs.hasNext()) {
+											NomLinks output = itStageOutputs.next();
+											List<Stage> outputStages = orderProdService.getStageById(output.getStageIdOutput());
+											Iterator<Stage> itOutputStages = outputStages.iterator();
+											while (itOutputStages.hasNext()) {
+												Stage outStage = itOutputStages.next();
+												if (outStage.getState().equals("new")) {
+													startCalc = false;
+												} else if (completeDate.after(outStage.getPlanStartDate())) {
+													completeDate = outStage.getPlanStartDate();
+												}
+											}
+										}
+										msgP.setContent(formatter.format(completeDate));
+									} else {
+										List<Stage> nextStageList = new ArrayList<Stage>();
+										nextStageList = orderProdService.getStage(order.getOrderId(), stage.getNextNumber(), stage.getCodeNom());
+										Iterator<Stage> itNextStage = nextStageList.iterator();
+										while (itNextStage.hasNext()) {
+											nextStage = itNextStage.next();
+											if (nextStage.getState().equals("plan")) {
+												msgP.setContent(formatter.format(nextStage.getPlanStartDate()));
+											}
+										}
+									}
+								}
+								msgP.setConversationId("StartPlanning");
+								//cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
+								if (startCalc) {
+									myAgent.send(msgP);
+								}
+								// Prepare the template to get proposals
+							}
+						}
 					}
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-					msgP.setContent(formatter.format(startDate));
-					msgP.setConversationId("StartPlanning");
-					//cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Unique value
-					myAgent.send(msgP);
-					// Prepare the template to get proposals
-				}
 				step = 2;
-				break;					
+				break;
 			case 2:
 				// Receive all status from stage agents
 
@@ -302,14 +364,10 @@ public class OrderProductionAgent extends Agent{
 				else {
 					//block();
 				}
-				//Если выполняется более 15 сек
-				if (System.currentTimeMillis() > end) {
-					step = 3;
-				}
+				step = 3;
 				break;
-
 			case 3:
-					block();
+				block();
 			}
 		}
 		

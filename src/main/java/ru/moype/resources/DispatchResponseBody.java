@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,47 +18,64 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import ru.moype.model.Division;
 import ru.moype.model.OrderProduction;
 import ru.moype.model.Stage;
 import ru.moype.service.OrderProductionService;
-
+import ru.moype.service.ResourcesService;
+@Service
 public class DispatchResponseBody {
 
 	private List<Group> gr;
 	private List<Item> items;
 
-	public DispatchResponseBody() throws ParseException {
+	@Autowired
+	ResourcesService resourceService;
+
+	public void setDispatchResponseBody() throws ParseException {
 
 		gr = new ArrayList<Group>();
 		items = new ArrayList<Item>();
 		OrderProductionService orderService = new OrderProductionService();
-		
+		//ResourcesService resourceService = new ResourcesService();
+
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		Group group = new Group("Конструкторский отдел", "Конструкторский отдел", 1, "Конструкторский отдел");
-		gr.add(group);
+
+		List<Division> divisionList = resourceService.getAll();
+		Iterator<Division> itDivision = divisionList.iterator();
+		while (itDivision.hasNext()){
+			Division division = itDivision.next();
+			Group group = new Group(division.getName(),division.getName(),1,division.getName());
+			gr.add(group);
+		}
+
+
+
+		//Group group = new Group("Конструкторский отдел", "Конструкторский отдел", 1, "Конструкторский отдел");
+
 		//Нужно добавлять подчиненные группы по номенклатуре
-		Group group1 = new Group("участок коммплектации", "участок коммплектации", 1, "участок коммплектации");
-		gr.add(group1);
-		Group group2 = new Group("механический цех", "механический цех", 1, "механический цех");
-		gr.add(group2);
-		Group group3 = new Group("сборочный цех", "сборочный цех", 1, "сборочный цех");
-		gr.add(group3);
-		Group group4 = new Group("НТО", "НТО", 1, "НТО");
-		gr.add(group4);
-		Group group5 = new Group("цех защитных покрытий", "цех защитных покрытий", 1, "цех защитных покрытий");
-		gr.add(group5);
-		Group group6 = new Group("испытательная станция", "испытательная станция", 1, "испытательная станция");
-		gr.add(group6);
-		Group group7 = new Group("заготовительный участок", "заготовительный участок", 1, "заготовительный участок");
-		gr.add(group7);
-		Group group8 = new Group("механический участок", "механический участок", 1, "механический участок");
-		gr.add(group8);		
-		Group group9 = new Group("ЦЗП", "ЦЗП", 1, "ЦЗП");
-		gr.add(group9);	
-		Group group10 = new Group("ОТК", "ОТК", 1, "ОТК");
-		gr.add(group10);		
-		Group group11 = new Group("электро-монтажный цех", "электро-монтажный цех", 1, "электро-монтажный цех");
-		gr.add(group11);	
+		//Group group1 = new Group("участок коммплектации", "участок коммплектации", 1, "участок коммплектации");
+		//gr.add(group1);
+		//Group group2 = new Group("механический цех", "механический цех", 1, "механический цех");
+		//gr.add(group2);
+		//Group group3 = new Group("сборочный цех", "сборочный цех", 1, "сборочный цех");
+		//gr.add(group3);
+		//Group group4 = new Group("НТО", "НТО", 1, "НТО");
+		//gr.add(group4);
+		//Group group5 = new Group("цех защитных покрытий", "цех защитных покрытий", 1, "цех защитных покрытий");
+		//gr.add(group5);
+		//Group group6 = new Group("испытательная станция", "испытательная станция", 1, "испытательная станция");
+		//gr.add(group6);
+		//Group group7 = new Group("заготовительный участок", "заготовительный участок", 1, "заготовительный участок");
+		//gr.add(group7);
+		//Group group8 = new Group("механический участок", "механический участок", 1, "механический участок");
+		//gr.add(group8);
+		//Group group9 = new Group("ЦЗП", "ЦЗП", 1, "ЦЗП");
+		//gr.add(group9);
+		//Group group10 = new Group("ОТК", "ОТК", 1, "ОТК");
+		//gr.add(group10);
+		//Group group11 = new Group("электро-монтажный цех", "электро-монтажный цех", 1, "электро-монтажный цех");
+		//gr.add(group11);
 		
 		List<OrderProduction> orderList = orderService.getAll();
 		Iterator<OrderProduction> itOrder = orderList.iterator();
@@ -74,8 +92,10 @@ public class DispatchResponseBody {
 		}	
 	}
 	
-	public String DispatchResponseBodyToJSON() throws JsonProcessingException {
-		
+	public String DispatchResponseBodyToJSON() throws JsonProcessingException, ParseException {
+
+		setDispatchResponseBody();
+
 		ObjectWriter ow = new ObjectMapper().writer().without(SerializationFeature.INDENT_OUTPUT);
 		
 		Map<String, List> m = new HashMap();
