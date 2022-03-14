@@ -29,7 +29,7 @@ public class DBStage {
 	    
 		private static final String READ = "Select c From Stage c where c.codeNom = :codeNom order by c.number";
 		private static final String DELETE = "UPDATE Category c set c.statusCategory = 0 where c.idCategory IN (:ids) ";
-		private static final String READINPUTS = "Select c From NomLinks c where c.stageIdOutput = :stageId";
+		private static final String READINPUTS = "Select c From NomLinks c where c.stageId = :stageId";
 		private static final String READOUTPUTS = "Select c From NomLinks c where c.stageIdInput = :stageId";
 
 		public DBStage() {
@@ -108,6 +108,13 @@ public class DBStage {
 		}
 
 		@Transactional
+		public List<RowStageSchemeResgroup> getSchemeResGroups(String stageId){
+			Query query = em.createQuery("Select c From RowStageSchemeResgroup c where c.idStage = :stageId");
+			query.setParameter("stageId", stageId);
+			return query.getResultList();
+		}
+
+		@Transactional
 		public Stage getStageById(String stageId) {
 			Query query = em.createQuery("Select c From Stage c where c.idStage = :stageId");
 			query.setParameter("stageId", stageId);
@@ -121,8 +128,8 @@ public class DBStage {
 
 		@Transactional
 		public NomLinks getNomLink(NomLinks nomLink) {
-			Query query = em.createQuery("Select c From NomLinks c where c.stageIdOutput = :stageIdOutput and c.stageIdInput = :stageIdInput and c.codeNom = :codeNom and c.orderId = :orderId and c.idBase = :idBase");
-			query.setParameter("stageIdOutput", nomLink.getStageIdOutput());
+			Query query = em.createQuery("Select c From NomLinks c where c.stageId = :stageId and c.stageIdInput = :stageIdInput and c.codeNom = :codeNom and c.orderId = :orderId and c.idBase = :idBase");
+			query.setParameter("stageId", nomLink.getStageId());
 			query.setParameter("stageIdInput", nomLink.getStageIdInput());
 			query.setParameter("codeNom", nomLink.getCodeNom());
 			query.setParameter("orderId", nomLink.getOrderId());

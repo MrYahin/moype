@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @Entity
 @Table(name = "Stage")
 public class Stage implements Serializable { // Serializable Important to Hibernate!
-	private static final long serialVersionUID = -8706689714326132798L;
+
+	 private static final long serialVersionUID = -8706689714326132798L;
 
 	 @Id
 	 @Column(name = "id")
@@ -53,8 +54,11 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 @Column(name = "planFinishDate")
 	 @Temporal(value=TemporalType.DATE)	 
 	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")	
-	 private Date planFinishDate;	 
-	 
+	 private Date planFinishDate;
+
+	@Column(name = "isCritical")
+	private long isCritical;
+
 	 @Column(name = "factStartDate")
 	 @Temporal(value=TemporalType.DATE)	 
 	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")	
@@ -63,13 +67,28 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 @Column(name = "factFinishDate")
 	 @Temporal(value=TemporalType.DATE)	 
 	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")	
-	 private Date factFinishDate;	
-	 
+	 private Date factFinishDate;
+
 	 @Column(name = "division")
 	 private String division;
 
 	@Column(name = "mode")
 	private String mode;
+
+	@Column(name = "buffer")
+	private boolean buffer;
+
+	@Column(name = "needProvision")
+	private boolean needProvision;
+
+	@Column(name = "startBuffer")
+	private long startBuffer;
+
+	@Column(name = "endBuffer")
+	private long endBuffer;
+
+	@Column(name = "modelPlanning")
+	private long modelPlanning;
 
 	@Column(name = "idBase")
 	private String idBase;
@@ -78,7 +97,7 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 public Stage() {
 	 }	
 
-	 public Stage(long id,  long number, long nextNumber, String name, String idStage, long point, long needTime, String typeOfResource, String orderId, String state, Date planStartDate, Date planFinishDate, Date factStartDate, Date factFinishDate, String codeNom, String mode, String idBase) {
+	 public Stage(long id,  long number, long nextNumber, String name, String idStage, long point, long needTime, String typeOfResource, String orderId, String state, Date planStartDate, Date planFinishDate, long isCritical, Date factStartDate, Date factFinishDate, String codeNom, String mode, boolean buffer, boolean needProvision, long startBuffer, long endBuffer, long modelPlanning, String idBase) {
 	        this.setId(id);
 	        this.setNumber(number);
 	        this.nextNumber = nextNumber;
@@ -91,10 +110,16 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	        this.setState(state);
 	        this.setPlanStartDate(planStartDate);
 	        this.setPlanFinishDate(planFinishDate);
+	        this.isCritical = isCritical;
 	        this.setFactStartDate(factStartDate);
 	        this.setFactFinishDate(factFinishDate);
 	        this.setCodeNom(codeNom);
 		 	this.mode = mode;
+			this.buffer = buffer;
+			this.startBuffer = startBuffer;
+			this.endBuffer = endBuffer;
+			this.needProvision = needProvision;
+			this.modelPlanning = modelPlanning;
 		 	this.setIdBase(idBase);
 	 }
 	 
@@ -149,9 +174,13 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 
 	 public Date getPlanFinishDate() {
 	     return planFinishDate;
-	 }		
-	 
-	 public Date getFactStartDate() {
+	 }
+
+	public long getIsCritical() {
+		return isCritical;
+	}
+
+	public Date getFactStartDate() {
 	     return factStartDate;
 	 }	 	 
 	 
@@ -171,8 +200,28 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 		return mode;
 	}
 
+	public boolean getBuffer() {
+		return buffer;
+	}
+
+	public boolean getNeedProvision() {
+		return needProvision;
+	}
+
 	public String getIdBase() {
 		return idBase;
+	}
+
+	public long getStartBuffer() {
+		return startBuffer;
+	}
+
+	public long getEndBuffer() {
+		return endBuffer;
+	}
+
+	public long getModelPlanning() {
+		return modelPlanning;
 	}
 
 	public void setId(long id) {
@@ -221,9 +270,13 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 
 	 public void setPlanFinishDate(Date planFinishDate) {
 	     this.planFinishDate = planFinishDate;
-	 }	 
-	 
-	 public void setFactStartDate(Date factStartDate) {
+	 }
+
+	public void setIsCritical(long isCritical) {
+		this.isCritical = isCritical;
+	}
+
+	public void setFactStartDate(Date factStartDate) {
 	     this.factStartDate = factStartDate;
 	 }	 
 
@@ -239,8 +292,28 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	     this.division = division;
 	 }
 
+	public void setBuffer(boolean buffer) {
+		this.buffer = buffer;
+	}
+
+	public void setStartBuffer(long startBuffer) {
+		this.startBuffer = startBuffer;
+	}
+
+	public void setEndBuffer(long endBuffer) {
+		this.endBuffer = endBuffer;
+	}
+
+	public void setNeedProvision(boolean needProvision) {
+		this.needProvision = needProvision;
+	}
+
 	public void setIdBase(String idBase) {
 		this.idBase = idBase;
+	}
+
+	public void setModelPlanning(long modelPlanning) {
+		this.modelPlanning = modelPlanning;
 	}
 
 	@Override

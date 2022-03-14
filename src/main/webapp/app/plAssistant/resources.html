@@ -2,8 +2,8 @@
 <html ng-app="app" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dispatch stages</title>
-    <link href="./css/vis-timeline-graph2d.min.css" rel="stylesheet" type="text/css" />
+    <title>Loading resources</title>
+    <link href="./css/vis-timeline-graph2d.css" rel="stylesheet" type="text/css" />
     <link href="./css/dispatch.css" rel="stylesheet" type="text/css">
     <style type="text/css">
         body {
@@ -13,27 +13,27 @@
     </style>
 
 
-    <script src="./js/vis-timeline-graph2d.min.js"></script>
-    <script src="js/vis.js"></script>
+    <script src="./js/vis-timeline-graph2d.js"></script>
+    <!--<script src="js/vis.js"></script>-->
     <script src="js/arrow.js"></script>
     <script src="/js/jquery.js"></script>
     <script src="/assets/js/angular.min.js"></script>
     <script src="/assets/js/moment.min.js"></script>
-    <script src="js/locales.js"></script>
-    <script src="Ctrl/vis.controller.js"></script>
+   <!-- <script src="js/locales.js"></script>-->
+    <script src="Ctrl/graph2d.controller.js"></script>
     <script src="Ctrl/timeLine.directive.js"></script>
 
 </head>
 
 <body onresize="/*timeline.checkResize();*/">
 
-<div ng-controller="TimeLineCtrl">
+<div ng-controller="Graph2dCtrl">
 
     <input type="date" name="dateStart" ng-model='visDate.start' ng-change="setDate()" value="2021-07-01" >
      <input type="date" name="dateEnd" ng-model='visDate.end' ng-change="setDate()" value="2021-09-30">
 
     <!--<vis-network data="data" options="options" height="100%"></vis-network>-->
-    <vis-timeline data="data" options="options" events="events"></vis-timeline>
+    <vis-graph2d data="data" options="options" events="events"></vis-graph2d>
 </div>>
 
 </body>

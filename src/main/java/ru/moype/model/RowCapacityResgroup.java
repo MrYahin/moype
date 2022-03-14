@@ -39,24 +39,21 @@ public class RowCapacityResgroup implements Serializable{
     @Column(name = "idBase")
     private String idBase;
 
+    @Column(name = "idStage")
+    private String idStage;
+
     public RowCapacityResgroup() {
 
-        this.id = "";
-        this.idResGroup = "";
-        this.name = "";
-        this.available = 0;
-        this.idBase = "";
-        this.division = "";
     }
 
-    public RowCapacityResgroup(String id, String idResGroup, String name, Date date, long available, String division, String idBase) {
-    	this.id = id;
+    public RowCapacityResgroup(String idResGroup, String name, Date date, long available, String division, String idBase, String idStage) {
         this.idResGroup = idResGroup;
         this.name = name;
         this.date = date;
         this.available = available;
         this.division = division;
         this.idBase = idBase;
+        this.idStage = idStage;
     }
 
     public String getId() {
@@ -87,16 +84,31 @@ public class RowCapacityResgroup implements Serializable{
         return idBase;
     }
 
+    public void setAvailable(long available) {
+        this.available = available;
+    }
 
-//    @Override
-//    public String toString() {
-//        return "OrderProduction{" +
-//                "number='" + number + '\'' +
-//                ", wayPoint='" + wayPoint + '\'' +
-//                ", division='" + division + '\'' +
-//                ", startDate='" + startDate + '\'' +
-//                ", completeDate='" + completeDate + '\'' +
-//                '}';
-//    }    	
-	
+    public void setIdResGroup(String idResGroup) {
+        this.idResGroup = idResGroup;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDivision(String division) {
+        this.division = division;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setIdBase(String idBase) {
+        this.idBase = idBase;
+    }
+
+    public void setIdStage(String idStage) {
+        this.idStage = idStage;
+    }
 }

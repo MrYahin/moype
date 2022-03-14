@@ -9,7 +9,9 @@ import ru.moype.model.*;
 import ru.moype.service.ResourcesService;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class LoadResources {
 
 	@RequestMapping(path="app/loadResources", method=RequestMethod.POST)
 	@ResponseBody
-	public String loadOrder(@RequestBody String resources) throws JsonParseException, JsonMappingException, IOException {
+	public String loadOrder(@RequestBody String resources) throws JsonParseException, JsonMappingException, IOException, ParseException {
 				
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<?, ?> map = objectMapper.readValue(resources, Map.class);
@@ -40,11 +42,20 @@ public class LoadResources {
 				}
 			}
 
-			if ("resGroup" == (String)entry.getKey()) {
+			if ("rowsResGroup" == (String)entry.getKey()) {
 				List<?> resGroups = (ArrayList<?>) entry.getValue();
 				for (int i = 0; i < resGroups.size(); i++) {
 					Map<?, ?> resGroup = (Map) resGroups.get(i);
 					RowCapacityResgroup newResGroup = objectMapper.convertValue(resGroup, RowCapacityResgroup.class);
+					resourcesServicе.updateRowCapacityResGroup(newResGroup);
+				}
+			}
+
+			if ("resGroups" == (String)entry.getKey()) {
+				List<?> resGroups = (ArrayList<?>) entry.getValue();
+				for (int i = 0; i < resGroups.size(); i++) {
+					Map<?, ?> resGroup = (Map) resGroups.get(i);
+					ResGroup newResGroup = objectMapper.convertValue(resGroup, ResGroup.class);
 					resourcesServicе.registerResGroup(newResGroup);
 				}
 			}
@@ -58,17 +69,14 @@ public class LoadResources {
 				//}
 			}
 
-			//if ("stages" == (String) entry.getKey()) {
-
-			//	List<?> stages = (ArrayList<?>) entry.getValue();
-			//	for (int i = 0; i < stages.size(); i++) {
-			//		Map<?, ?> stage = (Map) stages.get(i);
-			//		Stage newStage = objectMapper.convertValue(stage, Stage.class);
-			//		newStage.setCodeNom(codeNom);
-			//		categoryService.registerStage(newStage);
-			//	}
-			//}
-			
+			if ("calendar" == (String)entry.getKey()) {
+				List<?> calendar = (ArrayList<?>) entry.getValue();
+				for (int i = 0; i < calendar.size(); i++) {
+					Map<?, ?> rowDate = (Map) calendar.get(i);
+					RowCalendar rowCal = objectMapper.convertValue(rowDate, RowCalendar.class);
+					resourcesServicе.registerRowCalendar(rowCal);
+				}
+			}
 		}
 		
 		return "ok";

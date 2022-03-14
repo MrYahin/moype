@@ -1,26 +1,25 @@
 package ru.moype.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "division")
-public class Division implements Serializable{
+@Table(name = "resGroup")
+public class ResGroup implements Serializable{
 
 	private static final long serialVersionUID = -8706689714326132798L;
 
-	@Id
-	@Column(name = "id")
+    @Id
+    @Column(name = "id")
 	private String id;
 
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "parentId")
-	private String parentId;
-
-	@Column(name = "code")
-	private String code;
+	@Column(name = "division")
+	private String division;
 
     @Column(name = "idBase")
     private String idBase;
@@ -28,15 +27,14 @@ public class Division implements Serializable{
     @Column(name = "mode")
     private long mode;
 
-    public Division(){
+    public ResGroup(){
 
     }
 
-    public Division(String id, String name, String parentId, String code, String idBase, long mode) {
+    public ResGroup(String id, String name, String division, String idBase, long mode) {
     	this.id = id;
     	this.name = name;
-        this.parentId = parentId;
-        this.code = code;
+        this.division = division;
         this.idBase = idBase;
         this.mode = mode;
     }
@@ -49,12 +47,8 @@ public class Division implements Serializable{
         return name;
     }
 
-    public String getParentId() {
-        return parentId;
-    }
-
-    public String getCode() {
-        return code;
+    public String getDivision() {
+        return division;
     }
 
     public String getIdBase() {

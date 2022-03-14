@@ -23,6 +23,10 @@ public class StageService {
         return dbStage.getOutputs(idStage);
     }
 
+    public List<RowStageSchemeResgroup> getSchemeResGroups(String idStage){
+        return dbStage.getSchemeResGroups(idStage);
+    }
+
     public Stage save(Stage stage) {
         return dbStage.save(stage);
     }

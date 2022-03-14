@@ -144,8 +144,12 @@ public class OrderProduction implements Serializable{
 
     public void setIdOrderClient(String idOrderClient) {
         this.idOrderClient = idOrderClient;
-    }      
-    
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
 //    @Override
 //    public String toString() {
 //        return "OrderProduction{" +

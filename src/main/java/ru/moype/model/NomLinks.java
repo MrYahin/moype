@@ -18,8 +18,8 @@ public class NomLinks implements Serializable {
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)	
 	 private long id;
 	 
-	 @Column(name = "stageIdOutput")
-	 private String stageIdOutput;	 
+	 @Column(name = "stageId")
+	 private String stageId;
 
 	 @Column(name = "stageIdInput")
 	 private String stageIdInput;		 
@@ -43,8 +43,8 @@ public class NomLinks implements Serializable {
 	     return id;
 	 }
 	 
-	 public String getStageIdOutput() {
-	     return stageIdOutput;
+	 public String getStageId() {
+	     return stageId;
 	 }
 
 	 public String getStageIdInput() {
@@ -71,8 +71,8 @@ public class NomLinks implements Serializable {
 	     this.id = id;
 	 }
 	 
-	 public void setStageId(String stageIdOutput) {
-	     this.stageIdOutput = stageIdOutput;
+	 public void setStageId(String stageId) {
+	     this.stageId = stageId;
 	 }
 
 	 public void setStageIdInput(String stageIdInput) {

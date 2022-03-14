@@ -1,6 +1,7 @@
 package ru.moype.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,10 +28,14 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import ru.moype.dbService.DBCategory;
 import ru.moype.dbService.DBOrderProduction;
+import ru.moype.dbService.DBStage;
+import ru.moype.dbService.InventoryRepositoryStage;
 import ru.moype.model.OrderProduction;
 import ru.moype.model.Stage;
+import ru.moype.resources.Arrow;
 import ru.moype.resources.OrderProductionAgent;
 import ru.moype.resources.OrderProductionManager;
+import ru.moype.resources.Task;
 
 @Service
 public class OrderProductionService {
@@ -43,8 +48,7 @@ public class OrderProductionService {
 
 	@Resource(name="testBean")
 	private JadeBean jadeBean;
-	
-	//DBOrderProduction dbOrderProduction = new DBOrderProduction();
+
 	//Это нужно для @Autowired, т.к. не должен быть статичным метод
 	@PostConstruct     
 	private void initStaticDBOrderProduction () {
@@ -109,76 +113,76 @@ public class OrderProductionService {
 	public List<OrderProduction> getOrderAgents(){
 		String state = "planning";
 		return dbOrderProduction.getAllState(state);
-	}	
+	}
 
 	public String createStageAgent(String orderId) throws Exception{
 
 		OrderProduction order;
-		List<Stage> stageList = new ArrayList<Stage>();	
-		
+		List<Stage> stageList = new ArrayList<Stage>();
+
 		// Get a hold on JADE runtime
-        Runtime rt = Runtime.instance();	
-		
+		Runtime rt = Runtime.instance();
+
 		Profile profile = new ProfileImpl();
-	    //profile.setParameter(Profile.MAIN_HOST, "127.0.0.1");
-	    //profile.setParameter(Profile.MAIN_PORT, "1098");
-	    //profile.setParameter(Profile.CONTAINER_NAME, "TestContainer");
+		//profile.setParameter(Profile.MAIN_HOST, "127.0.0.1");
+		//profile.setParameter(Profile.MAIN_PORT, "1098");
+		//profile.setParameter(Profile.CONTAINER_NAME, "TestContainer");
 		profile.setParameter(Profile.MAIN_HOST, "192.168.31.27");
 		profile.setParameter(Profile.MAIN_PORT, "1099");
 		profile.setParameter(Profile.CONTAINER_NAME, "OrderContainer");
-	    // now set the default Profile to start a container
-	    //AgentContainer ac = rt.createMainContainer(profile);
-	 
-	    
+		// now set the default Profile to start a container
+		//AgentContainer ac = rt.createMainContainer(profile);
+
+
 		//Boolean result;
-	    //OrderProductionManager orderProductionManager = new OrderProductionManager();
+		//OrderProductionManager orderProductionManager = new OrderProductionManager();
 		//result = createStage(orderId);
-	    
+
 		order = dbOrderProduction.getOrder(orderId);
 
 //		Iterator<Stage> itStage = stageList.iterator();
-//		if  
+//		if
 //		while (itStage.hasNext()){
 //			stage = itStage.next();
-//			stateStage = stage.getState();  
+//			stateStage = stage.getState();
 //			if (!stateStage.equals("stop")){
 //				try {
 //			    	Object argsJ[] = new Object[3];
-//			    	argsJ[0] = stage; 
-			    	//argsJ[1] = order.getStartDate();
-			    	//argsJ[2] = order.getCompleteDate();			
-//					AgentController agentStage = ac.createNewAgent("stage:" + stage.getNumber(),  "ru.moype.resources.StageAgent", argsJ); 
+//			    	argsJ[0] = stage;
+		//argsJ[1] = order.getStartDate();
+		//argsJ[2] = order.getCompleteDate();
+//					AgentController agentStage = ac.createNewAgent("stage:" + stage.getNumber(),  "ru.moype.resources.StageAgent", argsJ);
 //					agentOperation.start();
 //					operationsStatus.put(agentOperation.getName(), "start");
 //				} catch (Exception e) {
-//					System.out.println(""); 
+//					System.out.println("");
 //				}
 //			}
-//		}		
-		
-		
+//		}
+
+
 		if (order != null) {
 			Object argsJ[] = new Object[1];
 			argsJ[0]= order;
-				//OrderProductionAgent myAgent = new OrderProductionAgent();
+			//OrderProductionAgent myAgent = new OrderProductionAgent();
 			//myAgent.createAgent(order.getNumber());
 			// Get a hold on JADE runtime
 			//ContainerController cc = rt.createAgentContainer(profile);
-		    // now set the default Profile to start a container
-		    //AgentContainer ac = rt.createMainContainer(profile);
+			// now set the default Profile to start a container
+			//AgentContainer ac = rt.createMainContainer(profile);
 			//AgentController ac = cc.createNewAgent(order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
 			//ac.start();
 
 			jadeBean.startAgent("orderProduction:" + order.getOrderId(), "ru.moype.resources.OrderProductionAgent", argsJ);
 
 			//dbOrderProduction.updateOrder(orderId);
-			
+
 			return orderId;}
-		else 
+		else
 			return "read order problem";
-		
+
 	}
-	
+
 	public List<Stage> getStageList(String orderId){
 
     	List<Stage> stageList = new ArrayList<Stage>();
@@ -186,7 +190,8 @@ public class OrderProductionService {
     	//DBOrderProduction dbService = new DBOrderProduction();
         stageList = dbOrderProduction.readStageList(orderId);
         
-        if (stageList != null) { return stageList; }
+        if (stageList != null) {
+				return stageList; }
         else { return null; }
 	}
 
@@ -205,7 +210,6 @@ public class OrderProductionService {
 
 		List<Stage> stageList = new ArrayList<Stage>();
 
-		//DBOrderProduction dbService = new DBOrderProduction();
 		stageList = dbOrderProduction.readStageToPlanList(orderId, mode);
 
 		if (stageList != null) { return stageList; }
@@ -216,18 +220,61 @@ public class OrderProductionService {
 
 		List<Stage> stageList = new ArrayList<Stage>();
 
-		//DBOrderProduction dbService = new DBOrderProduction();
 		stageList = dbOrderProduction.readStage(orderId, number, codeNom);
 
 		if (stageList != null) { return stageList; }
 		else { return null; }
 	}
 
+	public HashSet<Task> getStageForCalculateCritical(String orderId){
+		HashSet<Task> tasks = new HashSet<Task>();
+		List<Task> taskL = dbOrderProduction.getCodeNomeList(orderId);
+		for (Task t : taskL) {
+			HashSet<Task> dependencies = new HashSet<Task>();
+			List<String> dependenciesL = dbOrderProduction.getDependencies(orderId, t.getName());
+			for (String dep: dependenciesL) {
+				for (Task ts : taskL) {
+					if (ts.getName().equals(dep)) {
+						dependencies.add(ts);
+						break;
+					}
+				}
+			}
+			t.dependencies = dependencies;
+			tasks.add(t);
+		}
+		return tasks;
+	}
+
+	public List<Arrow> getArrowsByStage(String stageId){
+
+		List<Arrow> arrowList = new ArrayList<Arrow>();
+
+		arrowList = dbOrderProduction.readArrowsByStage(stageId);
+
+		if (arrowList != null) {
+			return arrowList; }
+		else { return null; }
+	}
 
 
-//	public int delete(Long[] ids) {
-//		return dbCategory.delete(ids);
-//	}
+	public int updateCritical(Task t, String orderId) {
+
+		List<Stage> stages = dbOrderProduction.readStagesByCodeNom(t.getName(), orderId);
+		for (Stage st: stages){
+			if (st.getIsCritical() != t.getOnCritical()){
+				st.setIsCritical(t.getOnCritical());
+				dbOrderProduction.updateStage(st.getIdStage(), t.getOnCritical());
+			}
+		}
+
+		return 0;
+	}
+
+	public int deleteResGroupLoad(String id) {
+		return dbOrderProduction.deleteResGroupLoad(id);
+	}
+
 
 	public OrderProduction register(OrderProduction order) {
 		return dbOrderProduction.register(order);

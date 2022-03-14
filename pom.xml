@@ -120,7 +120,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>1.5</version>
+				<version>2.5.0</version>
 				<executions>
 					<execution>
 						<id>xjc</id>
@@ -132,9 +132,9 @@
 				<configuration>
 					<!-- The package of your generated sources -->
 					<packageName>ru.moype.model</packageName>
-					<wsdl>true</wsdl>
+					<!--<wsdl>true</wsdl>
 					<xmlschema>false</xmlschema>
-					<schemaFiles>moype.wsdl</schemaFiles>
+					<schemaFiles>moype.wsdl</schemaFiles>-->
 					<outputDirectory>${project.basedir}/src/main/generate/</outputDirectory>
 
 				</configuration>

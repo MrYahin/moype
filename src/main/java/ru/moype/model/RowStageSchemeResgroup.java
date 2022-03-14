@@ -24,7 +24,7 @@ public class RowStageSchemeResgroup implements Serializable{
 	private String idStage;
 
     @Column(name = "loadTime")
-	private long load;
+	private long loadTime;
 
     @Column(name = "number")
     private long number;
@@ -32,23 +32,21 @@ public class RowStageSchemeResgroup implements Serializable{
     @Column(name = "idBase")
     private String idBase;
 
-    public RowStageSchemeResgroup() {
+    @Column(name = "state")
+    private String state;
 
-        this.id = "";
-        this.idResGroup = "";
-        this.idStage = "";
-        this.load = 0;
-        this.number = 0;
-        this.idBase = "";
+    public RowStageSchemeResgroup(){
+
     }
 
-    public RowStageSchemeResgroup(String id, String idResGroup, String idStage, long load, long number, String idBase) {
+    public RowStageSchemeResgroup(String id, String idResGroup, String idStage, long loadTime, long number, String idBase, String state) {
         this.id = id;
         this.idResGroup = idResGroup;
         this.idStage = idStage;
-        this.load = load;
+        this.loadTime = loadTime;
         this.number = number;
         this.idBase = idBase;
+        this.state = state;
     }
 
     public String getId() {
@@ -59,32 +57,47 @@ public class RowStageSchemeResgroup implements Serializable{
         return idResGroup;
     }
 
+    public void setIdResGroup(String idResGroup) {
+        this.idResGroup = idResGroup;
+    }
+
     public String getIdStage() {
         return idStage;
+    }
+
+    public void setIdStage(String idStage) {
+        this.idStage = idStage;
     }
 
     public long getNumber() {
         return number;
     }
 
-    public long getLoad() {
-        return load;
+    public void setNumber(long number) {
+        this.number = number;
+    }
+
+    public long getLoadTime() {
+        return loadTime;
+    }
+
+    public void setLoad(long load) {
+        this.loadTime = loadTime;
     }
 
     public String getIdBase() {
         return idBase;
     }
 
+    public void setIdBase(String idBase) {
+        this.idBase = idBase;
+    }
 
-//    @Override
-//    public String toString() {
-//        return "OrderProduction{" +
-//                "number='" + number + '\'' +
-//                ", wayPoint='" + wayPoint + '\'' +
-//                ", division='" + division + '\'' +
-//                ", startDate='" + startDate + '\'' +
-//                ", completeDate='" + completeDate + '\'' +
-//                '}';
-//    }    	
-	
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 }
