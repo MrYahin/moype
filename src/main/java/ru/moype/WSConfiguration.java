@@ -24,7 +24,7 @@ public class WSConfiguration {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
         // this package must match the package in the <generatePackage> specified in
         // pom.xml
-        marshaller.setContextPath("ru.moype.model");
+        marshaller.setContextPath("ru.moype.model.integration");
         return marshaller;
     }
 

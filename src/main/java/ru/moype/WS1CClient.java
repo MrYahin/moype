@@ -3,9 +3,8 @@ package ru.moype;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-import org.springframework.ws.soap.client.core.SoapActionCallback;
-import ru.moype.model.GetSpec;
-import ru.moype.model.GetSpecResponse;
+import ru.moype.model.integration.GetSpec;
+import ru.moype.model.integration.GetSpecResponse;
 
 @Component
 public class WS1CClient extends WebServiceGatewaySupport {

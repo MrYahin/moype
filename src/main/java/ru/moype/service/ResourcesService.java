@@ -31,8 +31,12 @@ public class ResourcesService {
         return dbResources.getResGroupsByDivision(division);
     }
 
-    public RowCapacityResgroup getCapacityByResGroup(String idResgroup, Date date) throws ParseException {
-        return dbResources.getResgroupByDate(idResgroup, date);
+    public List<RowCapacityResgroup> getCapacityByResGroup(String idResgroup, Date date, long simultaneous) throws ParseException {
+        return dbResources.getCapacityResgroupByDate(idResgroup, date, simultaneous);
+    }
+
+    public RowCapacityResgroup getCapacity_Time(String idResgroup, Date date, long mode){
+        return dbResources.getResgroupTimeByDate(idResgroup, date, mode);
     }
 
     public RowCapacityResgroup getAvailableResgroupByDate(String idResgroup, Date date) throws ParseException {

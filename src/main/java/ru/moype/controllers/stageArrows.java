@@ -18,7 +18,7 @@ public class stageArrows {
 	@Autowired
 	OrderProductionService orderProductionService;
 	
-	@RequestMapping(path="app/plAssistant/stageArrows", method=RequestMethod.POST, produces = "text/plain;charset=UTF-8")
+	@RequestMapping(path="app/plAssistant/getStageArrows", method=RequestMethod.POST, produces = "text/plain;charset=UTF-8")
 	@ResponseBody
 	public String getArrowsByStage(@RequestBody String idStage) throws JsonProcessingException {
 		idStage = idStage.replaceAll("=", "");

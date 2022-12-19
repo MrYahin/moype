@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import ru.moype.model.Category;
+import ru.moype.model.pdm.Category;
 import ru.moype.model.Stage;
 import ru.moype.service.CategoryService;
 
@@ -28,8 +28,8 @@ public class CategoryResource {
 
 	@RequestMapping(path="app/pdm/stageList", method=RequestMethod.POST)
 	@ResponseBody
-	public List<Stage> listOfStage(@RequestBody String codeNom){
-		return categoryService.listOfStage(codeNom);
+	public List<Stage> listOfStage(@RequestBody String batch){
+		return categoryService.listOfStage(batch);
 	}	
 	
 	@RequestMapping(value="app/pdm/category", method = RequestMethod.DELETE)

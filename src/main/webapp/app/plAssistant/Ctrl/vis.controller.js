@@ -7,8 +7,8 @@ TimeLineCtrl.inject = ['$scope', 'VisDataSet', "$http"];
 function TimeLineCtrl($scope, VisDataSet, $http) {
 
     $scope.visDate = {};
-    $scope.visDate.start = new Date('2021-07-01');
-    $scope.visDate.end = new Date('2021-09-30');
+    $scope.visDate.start = new Date('2022-10-09');
+    $scope.visDate.end = new Date('2022-10-11');
 
     $scope.onSelect = function(items) {
         // debugger;
@@ -37,6 +37,24 @@ function TimeLineCtrl($scope, VisDataSet, $http) {
         $scope.options.end = $scope.visDate.end;
     };
 
+    $scope.setOrder = function(props) {
+        let order = $scope.order;
+        $http({
+            method : 'GET',
+            params: {order: order},
+            url : "getDispatchDataToFront"}).then(function success(response) {
+
+            // Create a DataSet (allows two way data-binding)
+            dataResponse = response.data;
+
+
+            //stage_arrow = new Arrow(timeline, []);
+
+            $scope.data = dataResponse;
+
+        });
+    };
+
     $scope.onUpdate = function (item, callback) {
         item.content = prompt('Edit items text:', item.content);
         if (item.content != null) {
@@ -62,7 +80,7 @@ function TimeLineCtrl($scope, VisDataSet, $http) {
         locale: 'ru',
         //min: 1000 * 60 * 60 * 24,
         //max: moment(date.setFullYear(date.getFullYear() + 1)).format('YYYY-MM-DD')
-        zoomMin: 1000 * 60 * 60 * 24,
+        zoomMin: 1000 * 60 * 60,
         zoomMax: 1000 * 60 * 60 * 24 * 30 * 3,
         //type: 'range',
         //hiddenDates: hiddenDates,
@@ -73,6 +91,9 @@ function TimeLineCtrl($scope, VisDataSet, $http) {
         stack: true,
         stackSubgroups: true,
         multiselect: true,
+        groupOrder: function (a, b) {
+            return a.value - b.value;
+        },
         onMove: function (item, callback) {
             console.log('request');
         },
@@ -93,7 +114,8 @@ function TimeLineCtrl($scope, VisDataSet, $http) {
 
     $http({
             method : 'GET',
-            url : "dispatchData"}).then(function success(response) {
+            params: {order: "all"},
+            url : "getDispatchDataToFront"}).then(function success(response) {
 
                 // Create a DataSet (allows two way data-binding)
                 dataResponse = response.data;

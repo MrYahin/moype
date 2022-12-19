@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import ru.moype.dbService.DBCategory;
 import ru.moype.dbService.DBStage;
-import ru.moype.model.Category;
+import ru.moype.model.pdm.Category;
 import ru.moype.model.Stage;
 
 @Service
@@ -30,8 +30,8 @@ public class CategoryService {
 	@Autowired
 	DBStage dbStage;	
 	
-	public List<Stage> listOfStage(String codeNom){
-		return dbStage.getAll(codeNom);
+	public List<Stage> listOfStage(String batch){
+		return dbStage.getAll(batch);
 	}
 	
 	public Stage registerStage(Stage stage){

@@ -30,10 +30,51 @@
 <div ng-controller="TimeLineCtrl">
 
     <input type="date" name="dateStart" ng-model='visDate.start' ng-change="setDate()" value="2021-07-01" >
-     <input type="date" name="dateEnd" ng-model='visDate.end' ng-change="setDate()" value="2021-09-30">
+    <input type="date" name="dateEnd" ng-model='visDate.end' ng-change="setDate()" value="2021-09-30">
+    <input id="save" type="button" value="Сохранить изменения" onclick="sendChanges()">
+    <input id="order" ng-model='order'><input id="showOrder" type="button" value="Показать" ng-click="setOrder()">
+
 
     <!--<vis-network data="data" options="options" height="100%"></vis-network>-->
     <vis-timeline data="data" options="options" events="events"></vis-timeline>
+
+    <script type="text/javascript">
+
+        function setAuthHeader(xhr){
+            var creds = Jacob + ':' + lawisdead;
+            var basicScheme = btoa(creds);
+            var hashStr = "Basic "+basicScheme;
+            xhr.setRequestHeader('Authorization', hashStr);
+        }
+
+        function sendChanges() {
+            $.ajax({
+                url: 'http://localhost:8080/saveChanges',
+                type: "POST",
+                //dataType: "json",
+                data: "test",
+                contentType : "application/json; charset=utf-8",
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                //    'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
+                //    'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token',
+                //    'Access-Control-Allow-Credentials': 'true'
+                //    "Authorization": "Basic " + btoa("Jacob:lawisdead")
+                },
+                success: function (data) {
+                    alert('ok');
+                },
+                error: function (err) {
+                    console.log('Error', err);
+                    if (err.status === 0) {
+                        alert('Failed to load data/basic.json.\nPlease run this example on a server.');
+                    } else {
+                        alert('Failed to load data/basic.json.');
+                    }
+                }
+                });
+        }
+    </script>
 </div>>
 
 </body>

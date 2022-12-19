@@ -37,12 +37,12 @@ public class CreateStages {
 				
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<?, ?> map = objectMapper.readValue(order, Map.class);
-		String codeNom = "";
+		String batch = "";
 		
 		for (Map.Entry<?, ?> entry : map.entrySet()) {
 			
-			if ("codeNom" == (String)entry.getKey()) {
-				codeNom = (String)entry.getValue();
+			if ("batch" == (String)entry.getKey()) {
+				batch = (String)entry.getValue();
 			}
 			
 			if ("stages" == (String) entry.getKey()) { 
@@ -51,7 +51,7 @@ public class CreateStages {
 				for (int i = 0; i < stages.size(); i++) {
 					Map<?, ?> stage = (Map) stages.get(i);
 					Stage newStage = objectMapper.convertValue(stage, Stage.class);
-					newStage.setCodeNom(codeNom);
+					newStage.setBatch(batch);
 					categoryService.registerStage(newStage);
 				}
 			}

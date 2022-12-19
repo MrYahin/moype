@@ -31,6 +31,10 @@ public class StageService {
         return dbStage.save(stage);
     }
 
+    public NomLinks saveLink(NomLinks nomL) {
+        return dbStage.saveLink(nomL);
+    }
+
     public Stage register(Stage stage) {
         return dbStage.register(stage);
     }

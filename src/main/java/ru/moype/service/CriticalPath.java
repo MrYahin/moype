@@ -1,6 +1,6 @@
 package ru.moype.service;
 
-import ru.moype.resources.Task;
+import ru.moype.model.Task;
 
 import java.util.*;
 

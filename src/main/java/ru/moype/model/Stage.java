@@ -25,8 +25,8 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 @Column(name = "name")
 	 private String name;	 
 
-	 @Column(name = "codeNom")
-	 private String codeNom;	 
+	 @Column(name = "batch")
+	 private String batch;
 	 
 	 @Column(name = "idStage")
 	 private String idStage;	 
@@ -47,26 +47,26 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	 private String state;	 //lifecycle: new-> plan -> done -> start -> complete.
 
 	 @Column(name = "planStartDate")
-	 @Temporal(value=TemporalType.DATE)	 
-	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")	
+	 @Temporal(value=TemporalType.TIMESTAMP)
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss",  timezone="Europe/Moscow")
 	 private Date planStartDate;	 
 
 	 @Column(name = "planFinishDate")
-	 @Temporal(value=TemporalType.DATE)	 
-	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")	
+	 @Temporal(value=TemporalType.TIMESTAMP)
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss",  timezone="Europe/Moscow")
 	 private Date planFinishDate;
 
 	@Column(name = "isCritical")
 	private long isCritical;
 
 	 @Column(name = "factStartDate")
-	 @Temporal(value=TemporalType.DATE)	 
-	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")	
+	 @Temporal(value=TemporalType.TIMESTAMP)
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss",  timezone="Europe/Moscow")
 	 private Date factStartDate;	 
 
 	 @Column(name = "factFinishDate")
-	 @Temporal(value=TemporalType.DATE)	 
-	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")	
+	 @Temporal(value=TemporalType.TIMESTAMP)
+	 @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss",  timezone="Europe/Moscow")
 	 private Date factFinishDate;
 
 	 @Column(name = "division")
@@ -93,11 +93,19 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	@Column(name = "idBase")
 	private String idBase;
 
+	@Column(name = "manual")
+	private boolean manual;
+
+	@Column(name = "notEarlier")
+	@Temporal(value=TemporalType.TIMESTAMP)
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss",  timezone="Europe/Moscow")
+	private Date notEarlier;
+
 	//Important to Hibernate!
 	 public Stage() {
 	 }	
 
-	 public Stage(long id,  long number, long nextNumber, String name, String idStage, long point, long needTime, String typeOfResource, String orderId, String state, Date planStartDate, Date planFinishDate, long isCritical, Date factStartDate, Date factFinishDate, String codeNom, String mode, boolean buffer, boolean needProvision, long startBuffer, long endBuffer, long modelPlanning, String idBase) {
+	 public Stage(long id,  long number, long nextNumber, String name, String idStage, long point, long needTime, String typeOfResource, String orderId, String state, Date planStartDate, Date planFinishDate, long isCritical, Date factStartDate, Date factFinishDate, String batch, String mode, boolean buffer, boolean needProvision, long startBuffer, long endBuffer, long modelPlanning, String idBase) {
 	        this.setId(id);
 	        this.setNumber(number);
 	        this.nextNumber = nextNumber;
@@ -113,7 +121,7 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	        this.isCritical = isCritical;
 	        this.setFactStartDate(factStartDate);
 	        this.setFactFinishDate(factFinishDate);
-	        this.setCodeNom(codeNom);
+	        this.setBatch(batch);
 		 	this.mode = mode;
 			this.buffer = buffer;
 			this.startBuffer = startBuffer;
@@ -188,8 +196,8 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	     return factFinishDate;
 	 }	 	
 
-	 public String getCodeNom() {
-	     return codeNom;
+	 public String getBatch() {
+	     return batch;
 	 }	
 	 
 	 public String getDivision() {
@@ -222,6 +230,14 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 
 	public long getModelPlanning() {
 		return modelPlanning;
+	}
+
+	public boolean getManual() {
+		return manual;
+	}
+
+	public Date getNotEarlier() {
+		return notEarlier;
 	}
 
 	public void setId(long id) {
@@ -284,8 +300,8 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 	     this.factFinishDate = factFinishDate;
 	 }	 	 
 
-	 public void setCodeNom(String codeNom) {
-	     this.codeNom = codeNom;
+	 public void setBatch(String batch) {
+	     this.batch = batch;
 	 }	
 	 
 	 public void setDivision(String division) {
@@ -314,6 +330,17 @@ public class Stage implements Serializable { // Serializable Important to Hibern
 
 	public void setModelPlanning(long modelPlanning) {
 		this.modelPlanning = modelPlanning;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+	public void setManual(boolean manual) {
+		this.manual = manual;
+	}
+
+	public void setNotEarlier(Date notEarlier) {
+		this.notEarlier = notEarlier;
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import ru.moype.service.ResourcesService;
 @PropertySource("classpath:application.properties")
 public class Application {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
 		//SpringApplication.run(Application.class, args);
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(Application.class);

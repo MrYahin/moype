@@ -58,7 +58,9 @@ angular.module('ngVis', [])
                     //let groupsSet = new vis.DataSet(scope.data.groups);
                     //let groupsArray = scope.data.groups;
                     //scope.data.groups = [];
-                    timeline = new vis.Timeline(element[0], scope.data.items, scope.data.groups, scope.options);
+                    var groups = new vis.DataSet();
+                    groups.add(scope.data.groups);
+                    timeline = new vis.Timeline(element[0], scope.data.items, groups, scope.options);
                     stage_arrow = new Arrow(timeline, []);
 
                     //----------------------------- групповое выделение по className -------------------
@@ -67,7 +69,7 @@ angular.module('ngVis', [])
                          if (props.items.length != 0){
 
                              $.ajax({
-                                 url: 'stageArrows',
+                                 url: 'getStageArrows',
                                  type: "POST",
                                  dataType: "json",
                                  data: "" + props.items[0],

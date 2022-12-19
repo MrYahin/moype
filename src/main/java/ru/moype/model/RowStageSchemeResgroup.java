@@ -81,7 +81,7 @@ public class RowStageSchemeResgroup implements Serializable{
         return loadTime;
     }
 
-    public void setLoad(long load) {
+    public void setLoadTime(long loadTime) {
         this.loadTime = loadTime;
     }
 

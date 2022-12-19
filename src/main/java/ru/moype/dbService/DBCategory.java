@@ -11,7 +11,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import ru.moype.model.Category;
+import ru.moype.model.pdm.Category;
 
 @Repository
 public class DBCategory {

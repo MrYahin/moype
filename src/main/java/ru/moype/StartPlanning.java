@@ -10,8 +10,7 @@ public class StartPlanning {
     @Autowired
     CompanyService companyService;
 
-    public void startPlanning()
-    {
+    public void startPlanning() throws Exception {
         companyService.start();
     }
 }

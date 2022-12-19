@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Date;
 
 @Entity
@@ -27,8 +28,18 @@ public class RowCapacityResgroup implements Serializable{
 
 	@Column(name = "date")
     @Temporal(value=TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd",  timezone="Europe/Moscow")
     private Date date;
+
+    @Column(name = "start")
+    @Temporal(value=TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss",  timezone="Europe/Moscow")
+    private Date start;
+
+    @Column(name = "finish")
+    @Temporal(value=TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss",  timezone="Europe/Moscow")
+    private Date finish;
 
     @Column(name = "available")
 	private long available;
@@ -42,18 +53,11 @@ public class RowCapacityResgroup implements Serializable{
     @Column(name = "idStage")
     private String idStage;
 
+    @Column(name = "scene")
+    private String scene;
+
     public RowCapacityResgroup() {
 
-    }
-
-    public RowCapacityResgroup(String idResGroup, String name, Date date, long available, String division, String idBase, String idStage) {
-        this.idResGroup = idResGroup;
-        this.name = name;
-        this.date = date;
-        this.available = available;
-        this.division = division;
-        this.idBase = idBase;
-        this.idStage = idStage;
     }
 
     public String getId() {
@@ -76,12 +80,24 @@ public class RowCapacityResgroup implements Serializable{
         return date;
     }
 
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getFinish() {
+        return finish;
+    }
+
     public long getAvailable() {
         return available;
     }
 
     public String getIdBase() {
         return idBase;
+    }
+
+    public String getIdStage() {
+        return idStage;
     }
 
     public void setAvailable(long available) {
@@ -104,6 +120,14 @@ public class RowCapacityResgroup implements Serializable{
         this.date = date;
     }
 
+    public void setStart(Date date) {
+        this.start = date;
+    }
+
+    public void setFinish(Date date) {
+        this.finish = date;
+    }
+
     public void setIdBase(String idBase) {
         this.idBase = idBase;
     }
@@ -111,4 +135,12 @@ public class RowCapacityResgroup implements Serializable{
     public void setIdStage(String idStage) {
         this.idStage = idStage;
     }
+
+    public static final Comparator<RowCapacityResgroup> COMPARE_BY_DATE = new Comparator<RowCapacityResgroup>() {
+        @Override
+        public int compare(RowCapacityResgroup lhs, RowCapacityResgroup rhs) {
+            return rhs.getStart().compareTo(lhs.getStart());
+        }
+    };
+
 }

@@ -10,9 +10,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ru.moype.WS1CClient;
-import ru.moype.model.GetSpecResponse;
-import ru.moype.model.Category;
-import ru.moype.model.SpecStr;
+import ru.moype.model.integration.GetSpecResponse;
+import ru.moype.model.pdm.Category;
+import ru.moype.model.integration.SpecStr;
 import ru.moype.dbService.DBCategory;
 
 @RestController

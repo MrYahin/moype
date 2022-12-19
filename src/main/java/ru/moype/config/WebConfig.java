@@ -2,7 +2,6 @@ package ru.moype.config;
 
 import jade.core.Agent;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -11,11 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import net.sf.jade4spring.JadeBean;
-import ru.moype.resources.OrderProductionAgent;
-import ru.moype.resources.StageAgent;
-
-import java.util.HashMap;
-import java.util.Map;
+import ru.moype.agents.OrderProductionAgent;
+import ru.moype.agents.StageAgent;
 
 
 @Configuration

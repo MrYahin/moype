@@ -19,7 +19,7 @@ public class NomList {
 	@Autowired
 	NomenclatureListService nomenclatureService;
 	
-	@RequestMapping(path="app/pdm/nomList", method=RequestMethod.GET)
+	@RequestMapping(path="app/pdm/getNomList", method=RequestMethod.GET)
 	@ResponseBody
 	public List<Nomenclature> getCategory(){
 		return nomenclatureService.getAll();

@@ -27,16 +27,24 @@ public class ResGroup implements Serializable{
     @Column(name = "mode")
     private long mode;
 
+    @Column(name = "simultaneous")
+    private long simultaneous;
+
     public ResGroup(){
 
     }
 
-    public ResGroup(String id, String name, String division, String idBase, long mode) {
+    public ResGroup(String id, String name, String division, String idBase, long mode, long simultaneous) {
     	this.id = id;
     	this.name = name;
         this.division = division;
         this.idBase = idBase;
         this.mode = mode;
+        this.simultaneous = simultaneous;
+    }
+
+    public void setSimultaneous(long simultaneous) {
+        this.simultaneous = simultaneous;
     }
 
     public String getId() {
@@ -57,6 +65,10 @@ public class ResGroup implements Serializable{
 
     public long getMode() {
         return mode;
+    }
+
+    public long getSimultaneous() {
+        return simultaneous;
     }
 
 }

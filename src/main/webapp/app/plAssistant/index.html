@@ -1,24 +1,42 @@
 <div class="row">
-	<form action="/start" method="post">
-		<input type="submit" value="Start JADE">
-	</form>
-	<form action="/loadOrder" method="post">
-		<input type="submit" value="Dwnld order.">
-	</form>
+	<div class="col-12">
+		<form action="/loadOrder" method="post">
+			<input type="submit" value="Dwnld order.">
+		</form>
+	</div>
 </div>
+
 <div class="row">
+	<div class="col-12">
 	<form>
 		<input type="submit" value="Dispatch level">
 		<input type="button" value="Диспетчирование" OnClick="location.href='dispatch.html'">
 		<input type="button" value="Загрузка ресурсов" OnClick="location.href='resources.html'">
 	</form>
+	</div>
 </div>
 <div class="row">
+	<div class="col-12">
 	<form action="/launchOrder" method="POST" name="launchOrderForm">
 		<input id="number" type="text" name="order" placeholder="Enter number of Order">
 		<input type="button" value="Launch order" onclick="sendMessage();">
 	</form>
-	
+	<h1>События</h1>
+	<h2>Выявить просроченные и перепланировать начиная с текущего числа</h2>
+	<form action="/actualOrder" method="POST" name="actualOrderForm">
+		<input id="ActualNumber" type="text" name="actualOrder" placeholder="Enter number of Order">
+		<input type="button" value="Actual order" onclick="sendActMessage();">
+	</form>
+	<h2>Изменить дату обеспечения и перепланировать начиная с данного этапа</h2>
+	<form action="/replanChangeProvision" method="POST" name="changeProv">
+		<input id="newProvDate" type="date" name="newProvDate" placeholder="Enter new date">
+		<input id="orderId" type="text" name="orderId" placeholder="Enter order">
+		<input id="stage" type="text" name="stage" placeholder="Enter id stage">
+		<input id="codeNom" type="text" name="codeNom" placeholder="Enter code">
+		<input type="button" value="Go" onclick="sendReplanProv();">
+	</form>
+	</div>
+</div>
 	<script type="text/javascript">
 		function sendMessage(){
 			form = $('form[name="launchOrderForm"]');
@@ -28,10 +46,29 @@
 		    );
 		    return false;
 		}
+
+		function sendActMessage(){
+			form = $('form[name="actualOrderForm"]');
+			$.post(
+					form.attr("action"),
+					form.serialize()
+			);
+			return false;
+		}
+
+		function sendReplanProv(){
+			form = $('form[name="changeProv"]');
+			$.post(
+					form.attr("action"),
+					form.serialize()
+			);
+			return false;
+		}
+
     </script>
-</div>	
 <div class="row">
 	<div class="col-sm-2">
 		<order-production-list></order-production-list>
 	</div>	
 </div>
+

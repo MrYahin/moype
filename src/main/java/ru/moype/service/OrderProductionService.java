@@ -1,8 +1,8 @@
 package ru.moype.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -12,172 +12,54 @@ import net.sf.jade4spring.JadeBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jade.content.lang.sl.SLCodec;
-import jade.content.onto.basic.Action;
-import jade.core.ContainerID;
-import jade.core.Profile;
-import jade.core.ProfileImpl;
-import jade.core.Runtime;
-import jade.domain.FIPANames;
-import jade.domain.JADEAgentManagement.CreateAgent;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
-import jade.domain.JADEAgentManagement.QueryPlatformLocationsAction;
-import jade.lang.acl.ACLMessage;
-import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
-import jade.wrapper.ContainerController;
-import ru.moype.dbService.DBCategory;
 import ru.moype.dbService.DBOrderProduction;
 import ru.moype.dbService.DBStage;
-import ru.moype.dbService.InventoryRepositoryStage;
+import ru.moype.model.Event;
 import ru.moype.model.OrderProduction;
 import ru.moype.model.Stage;
-import ru.moype.resources.Arrow;
-import ru.moype.resources.OrderProductionAgent;
-import ru.moype.resources.OrderProductionManager;
-import ru.moype.resources.Task;
+import ru.moype.model.vis.Arrow;
+import ru.moype.model.Task;
 
 @Service
 public class OrderProductionService {
 
 	private static DBOrderProduction dbOrderProduction;
-	private OrderProduction order;
-	
+
 	@Autowired
 	DBOrderProduction dbOrderProduction0;
 
 	@Resource(name="testBean")
 	private JadeBean jadeBean;
 
+	@Autowired
+	DBStage dbStage;
+
 	//Это нужно для @Autowired, т.к. не должен быть статичным метод
 	@PostConstruct     
 	private void initStaticDBOrderProduction () {
 	  dbOrderProduction = this.dbOrderProduction0;
 	}	
-	
-	public void start(AgentContainer ac) throws Exception{
-		// Get a hold on JADE runtime
-        //Runtime rt = Runtime.instance();	
-		
-		//Profile profile = new ProfileImpl();
-	    //profile.setParameter(Profile.MAIN_HOST, "127.0.0.1");
-	    //profile.setParameter(Profile.MAIN_PORT, "1099");
-	    // now set the default Profile to start a container
-	    //AgentContainer ac = rt.createMainContainer(profile);
-		//DBOrderProduction dborderProduction = new DBOrderProduction();
-		int i = 1;
-		
-		//OrderProductionService orderProductionService = new OrderProductionService();
-		
-		List<OrderProduction> orderProductionList = getOrderAgents();
-		
-		OrderProduction order = new OrderProduction();
-		
-		//long interval = 0;	//������
-		//CalendarResAv avTime;
 
-		//units = unit.getUnits();
-		//Calendar cal = Calendar.getInstance();
-		
-		//CalendarResAv calendarRes = new CalendarResAv(); 
-		if (orderProductionList != null) {
-			Iterator<OrderProduction> itOP = orderProductionList.iterator();
-			while (itOP.hasNext()){
-				//������� �������
-
-		    	order = itOP.next();				
-		    	Object argsJ[] = new Object[1];
-		    	argsJ[0]= order; 
- 
-				//AgentController agentOrderProduction = ac.createNewAgent("orderProduction:" + order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
-				jadeBean.startAgent("orderProduction:" + order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
-				//agentOrderProduction.start();
-
-				//i = i + 1;
-				//����� �����������
-				//for (int i = 1; i != 32; i++){		
-				//	cal.set(2017, Calendar.JANUARY, i, 0, 0, 0);
-				//	Date day = cal.getTime();
-				//	avTime = calendarRes.getAvTimeRes(day, unit.getNumber());
-				//}
-			}
-		}
-		else{
-		}
-	}
-	
 	public List<OrderProduction> getAll(){
 		return dbOrderProduction.getAll();
 	}
 
-	public List<OrderProduction> getOrderAgents(){
-		String state = "planning";
-		return dbOrderProduction.getAllState(state);
+	public OrderProduction getOrderById(String orderId){
+		return dbOrderProduction.getOrderProduction(orderId);
 	}
 
 	public String createStageAgent(String orderId) throws Exception{
 
-		OrderProduction order;
-		List<Stage> stageList = new ArrayList<Stage>();
+		//Зарегистрировать событие запуска заказа
 
-		// Get a hold on JADE runtime
-		Runtime rt = Runtime.instance();
-
-		Profile profile = new ProfileImpl();
-		//profile.setParameter(Profile.MAIN_HOST, "127.0.0.1");
-		//profile.setParameter(Profile.MAIN_PORT, "1098");
-		//profile.setParameter(Profile.CONTAINER_NAME, "TestContainer");
-		profile.setParameter(Profile.MAIN_HOST, "192.168.31.27");
-		profile.setParameter(Profile.MAIN_PORT, "1099");
-		profile.setParameter(Profile.CONTAINER_NAME, "OrderContainer");
-		// now set the default Profile to start a container
-		//AgentContainer ac = rt.createMainContainer(profile);
-
-
-		//Boolean result;
-		//OrderProductionManager orderProductionManager = new OrderProductionManager();
-		//result = createStage(orderId);
-
-		order = dbOrderProduction.getOrder(orderId);
-
-//		Iterator<Stage> itStage = stageList.iterator();
-//		if
-//		while (itStage.hasNext()){
-//			stage = itStage.next();
-//			stateStage = stage.getState();
-//			if (!stateStage.equals("stop")){
-//				try {
-//			    	Object argsJ[] = new Object[3];
-//			    	argsJ[0] = stage;
-		//argsJ[1] = order.getStartDate();
-		//argsJ[2] = order.getCompleteDate();
-//					AgentController agentStage = ac.createNewAgent("stage:" + stage.getNumber(),  "ru.moype.resources.StageAgent", argsJ);
-//					agentOperation.start();
-//					operationsStatus.put(agentOperation.getName(), "start");
-//				} catch (Exception e) {
-//					System.out.println("");
-//				}
-//			}
-//		}
-
+		OrderProduction order = dbOrderProduction.getOrder(orderId);
 
 		if (order != null) {
 			Object argsJ[] = new Object[1];
 			argsJ[0]= order;
-			//OrderProductionAgent myAgent = new OrderProductionAgent();
-			//myAgent.createAgent(order.getNumber());
-			// Get a hold on JADE runtime
-			//ContainerController cc = rt.createAgentContainer(profile);
-			// now set the default Profile to start a container
-			//AgentContainer ac = rt.createMainContainer(profile);
-			//AgentController ac = cc.createNewAgent(order.getNumber(), "ru.moype.resources.OrderProductionAgent", argsJ);
-			//ac.start();
-
-			jadeBean.startAgent("orderProduction:" + order.getOrderId(), "ru.moype.resources.OrderProductionAgent", argsJ);
-
-			//dbOrderProduction.updateOrder(orderId);
-
-			return orderId;}
+			jadeBean.startAgent("orderProduction:" + order.getOrderId(), "ru.moype.agents.OrderProductionAgent", argsJ);
+			return orderId;
+		}
 		else
 			return "read order problem";
 
@@ -186,13 +68,22 @@ public class OrderProductionService {
 	public List<Stage> getStageList(String orderId){
 
     	List<Stage> stageList = new ArrayList<Stage>();
-    	
-    	//DBOrderProduction dbService = new DBOrderProduction();
-        stageList = dbOrderProduction.readStageList(orderId);
+        stageList = dbOrderProduction.getStageList(orderId);
         
         if (stageList != null) {
 				return stageList; }
         else { return null; }
+	}
+
+	public List<Stage> getAllStageList(String orderId){
+
+		List<Stage> stageList = new ArrayList<Stage>();
+
+		stageList = dbOrderProduction.getAllStageList(orderId);
+
+		if (stageList != null) {
+			return stageList; }
+		else { return null; }
 	}
 
 	public List<Stage> getStageById(String stageId){
@@ -200,7 +91,7 @@ public class OrderProductionService {
 		List<Stage> stageList = new ArrayList<Stage>();
 
 		//DBOrderProduction dbService = new DBOrderProduction();
-		stageList = dbOrderProduction.readStageById(stageId);
+		stageList = dbOrderProduction.getStageById(stageId);
 
 		if (stageList != null) { return stageList; }
 		else { return null; }
@@ -210,17 +101,17 @@ public class OrderProductionService {
 
 		List<Stage> stageList = new ArrayList<Stage>();
 
-		stageList = dbOrderProduction.readStageToPlanList(orderId, mode);
+		stageList = dbOrderProduction.getStageToPlanList(orderId, mode);
 
 		if (stageList != null) { return stageList; }
 		else { return null; }
 	}
 
-	public List<Stage> getStage(String orderId, long number, String codeNom){
+	public List<Stage> getStage(String orderId, long number, String batch){
 
 		List<Stage> stageList = new ArrayList<Stage>();
 
-		stageList = dbOrderProduction.readStage(orderId, number, codeNom);
+		stageList = dbOrderProduction.getStage(orderId, number, batch);
 
 		if (stageList != null) { return stageList; }
 		else { return null; }
@@ -228,7 +119,7 @@ public class OrderProductionService {
 
 	public HashSet<Task> getStageForCalculateCritical(String orderId){
 		HashSet<Task> tasks = new HashSet<Task>();
-		List<Task> taskL = dbOrderProduction.getCodeNomeList(orderId);
+		List<Task> taskL = dbOrderProduction.getBatchList(orderId);
 		for (Task t : taskL) {
 			HashSet<Task> dependencies = new HashSet<Task>();
 			List<String> dependenciesL = dbOrderProduction.getDependencies(orderId, t.getName());
@@ -250,22 +141,34 @@ public class OrderProductionService {
 
 		List<Arrow> arrowList = new ArrayList<Arrow>();
 
-		arrowList = dbOrderProduction.readArrowsByStage(stageId);
+		arrowList = dbOrderProduction.getArrowsByStage(stageId);
 
 		if (arrowList != null) {
 			return arrowList; }
 		else { return null; }
 	}
 
-
 	public int updateCritical(Task t, String orderId) {
 
-		List<Stage> stages = dbOrderProduction.readStagesByCodeNom(t.getName(), orderId);
+		List<Stage> stages = dbOrderProduction.getStagesByBatch(t.getName(), orderId);
 		for (Stage st: stages){
 			if (st.getIsCritical() != t.getOnCritical()){
 				st.setIsCritical(t.getOnCritical());
-				dbOrderProduction.updateStage(st.getIdStage(), t.getOnCritical());
+				dbOrderProduction.updateStageCritical(st.getIdStage(), t.getOnCritical());
 			}
+		}
+
+		return 0;
+	}
+
+	public int updateStagesToPlan(String orderId) {
+
+		List<Stage> stages = dbOrderProduction.getStageList(orderId);
+		for (Stage st: stages){
+			st.setState("new");
+			st.setMode("0");
+			dbStage.register(st);
+			deleteResGroupLoad(st.getIdStage());
 		}
 
 		return 0;
@@ -275,8 +178,22 @@ public class OrderProductionService {
 		return dbOrderProduction.deleteResGroupLoad(id);
 	}
 
-
 	public OrderProduction register(OrderProduction order) {
 		return dbOrderProduction.register(order);
 	}
+
+	public int updateOrderStatus(OrderProduction order) {
+		dbOrderProduction.updateOrderStatus(order);
+		return 0;
+	}
+
+	public void setReplanStage(String idStage, String orderProd, Date notEarlier) throws Exception {
+		//Меняем статус заказа
+		OrderProduction order = dbOrderProduction.getOrderProduction(orderProd);
+		order.setState("replan");
+		dbOrderProduction.register(order);
+		//меняем этап
+		dbOrderProduction.setReplanStage(idStage, notEarlier);
+	}
+
 }

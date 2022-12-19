@@ -1,13 +1,6 @@
 package ru.moype.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import ru.moype.dbService.DBOrderProduction;
+import javax.persistence.*;
 
 import java.io.Serializable;
 import java.util.*;
@@ -35,23 +28,25 @@ public class OrderProduction implements Serializable{
 	@Column(name = "division")	
 	private String division;
 
-	@Column(name = "startDate")	
+    @Transient
 	private Date startDate;
-	 
-	@Column(name = "completeDate")
+    @Transient
 	private Date completeDate;
 	 
 	@Column(name = "idOrderClient")	
 	private String idOrderClient;
 
-	@Column(name = "state")	
-	private String state;
+    @Column(name = "needOrder") //Зависимый заказ
+    private String needOrder;
 
-    @Column(name = "mode")
+    @Transient
     private String mode;
 
     @Column(name = "idBase")
     private String idBase;
+
+    @Transient
+    private String state;
 
     public OrderProduction() {
     	
@@ -63,12 +58,11 @@ public class OrderProduction implements Serializable{
         this.completeDate = new Date();
         this.orderId = "";
         this.idOrderClient = "";
-        this.state = "new";
         this.idBase = "";
         this.mode = "1";
     }
 	
-    public OrderProduction(String number, String wayPoint, String division, Date startDate, Date completeDate, String orderId, String idOrderClient,  String state, String mode, String idBase) {
+    public OrderProduction(String number, String wayPoint, String division, Date startDate, Date completeDate, String orderId, String idOrderClient,  String mode, String idBase) {
     	this.number = number;
     	this.orderId = orderId;
         this.wayPoint = wayPoint;
@@ -76,15 +70,9 @@ public class OrderProduction implements Serializable{
         this.startDate = startDate;
         this.completeDate = completeDate;
         this.idOrderClient = idOrderClient;
-        this.state = state;
         this.mode = mode;
         this.idBase = idBase;
     }
-    
-//	public void save() {
-//		DBService dbService = new DBServiceImpl();
-//		dbService.saveOrderProduction(new OrderProductionSet(1, this.number, this.wayPoint, this.division, this.startDate, this.completeDate, this.orderId, this.idOrderClient, this.state));
-//	}
     
     public String getNumber() {
         return number;
@@ -118,16 +106,16 @@ public class OrderProduction implements Serializable{
         return idOrderClient;
     }     
 
-    public String getState() {
-        return state;
-    }
-
     public String getMode() {
         return mode;
     }
 
     public String getIdBase() {
         return idBase;
+    }
+
+    public String getNeedOrder() {
+        return needOrder;
     }
 
     public void setOrderId(String orderId) {
@@ -145,20 +133,16 @@ public class OrderProduction implements Serializable{
     public void setIdOrderClient(String idOrderClient) {
         this.idOrderClient = idOrderClient;
     }
-
     public void setState(String state) {
         this.state = state;
     }
 
-//    @Override
-//    public String toString() {
-//        return "OrderProduction{" +
-//                "number='" + number + '\'' +
-//                ", wayPoint='" + wayPoint + '\'' +
-//                ", division='" + division + '\'' +
-//                ", startDate='" + startDate + '\'' +
-//                ", completeDate='" + completeDate + '\'' +
-//                '}';
-//    }    	
-	
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getState() {
+        return state;
+    }
+
 }

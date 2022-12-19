@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "nomlinks")
@@ -36,6 +37,24 @@ public class NomLinks implements Serializable {
 	@Column(name = "idBase")
 	private String idBase;
 
+	@Column(name = "needDate")
+	private Date needDate;
+
+	@Column(name = "avDate")
+	private Date avDate;
+
+	@Column(name = "assignment")
+	private String assignment;
+
+	@Column(name = "needProvision")
+	private boolean needProvision;
+
+	@Column(name = "produced")
+	private boolean produced;
+
+	@Column(name = "batch")
+	private String batch;
+
 	public NomLinks() {
 	 }		 
 	 
@@ -55,6 +74,10 @@ public class NomLinks implements Serializable {
 	     return codeNom;
 	 }
 
+	public String getBatch() {
+		return batch;
+	}
+
 	 public String getState() {
 	     return state;
 	 }
@@ -65,9 +88,24 @@ public class NomLinks implements Serializable {
 
 	 public String getOrderId() {
 	     return orderId;
-	 }	 
-	 
-	 public void setId(long id) {
+	 }
+	public Date getNeedDate() {
+		return needDate;
+	}
+	public Date getAvDate() {
+		return avDate;
+	}
+	public String getAssignment() {
+		return assignment;
+	}
+	public boolean getNeedProvision() {
+		return needProvision;
+	}
+	public boolean getProduced() {
+		return produced;
+	}
+
+	public void setId(long id) {
 	     this.id = id;
 	 }
 	 
@@ -82,7 +120,9 @@ public class NomLinks implements Serializable {
 	 public void setCodeNom(String codeNom) {
 	     this.codeNom = codeNom;
 	 }
-	 
+	 public void setBatch(String batch) {
+		 this.batch = batch;
+	 }
 	 public void setId(String state) {
 	     this.state = state;
 	 }
@@ -98,5 +138,19 @@ public class NomLinks implements Serializable {
 	public void setIdBase(String idBase) {
 		this.idBase = idBase;
 	}
-
+	public void setNeedDate(Date needDate) {
+		this.needDate = needDate;
+	}
+	public void setAvDate(Date avDate) {
+		this.avDate = avDate;
+	}
+	public void setAssignment(String assignment) {
+		this.assignment = assignment;
+	}
+	public void setNeedProvision(boolean needProvision) {
+		this.needProvision = needProvision;
+	}
+	public void setProduced(boolean produced) {
+		this.produced = produced;
+	}
 }
